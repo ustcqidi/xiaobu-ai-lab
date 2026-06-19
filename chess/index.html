@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中国象棋 V2</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>中国象棋</h1>
+      <span class="ver">V2</span>
+      <div class="turn-line">当前：<span id="turn" class="turn-red">红方</span></div>
+      <button id="btn-stats" class="ghost-btn" title="统计中心">📊 统计</button>
+    </header>
+
+    <main class="layout">
+      <!-- 左侧：统计数据，默认常驻显示，无需点击展开 -->
+      <aside class="side-stats">
+        <fieldset>
+          <legend>战绩 · 人机</legend>
+          <div id="side-record" class="side-record"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>本局</legend>
+          <div class="side-line"><span class="k">回合数</span><span id="side-rounds" class="v">0</span></div>
+          <div class="side-line"><span class="k">着法数</span><span id="side-moves" class="v">0</span></div>
+          <div class="capture-box">
+            <div class="cap-row">
+              <span class="cap-label red">红方吃子</span>
+              <span id="cap-red" class="cap-pieces"></span>
+            </div>
+            <div class="cap-row">
+              <span class="cap-label black">黑方吃子</span>
+              <span id="cap-black" class="cap-pieces"></span>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>题库进度</legend>
+          <div id="side-puzzle" class="side-record"></div>
+        </fieldset>
+      </aside>
+
+      <div class="board-col">
+        <div class="board-wrap">
+          <canvas id="board"></canvas>
+          <div id="overlay" class="overlay"></div>
+          <div id="toast" class="toast hidden"></div>
+        </div>
+
+        <!-- 回合 / 倒计时横幅：数字醒目放大，明确标注玩家回合或 AI 思考 -->
+        <div class="board-foot">
+          <div id="timer-box" class="timer">
+            <span id="timer-label" class="timer-label">回合</span>
+            <span id="timer-value" class="timer-value">--:--</span>
+          </div>
+          <div id="ai-think" class="ai-think hidden"></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <fieldset>
+          <legend>模式</legend>
+          <label>对局模式
+            <select id="mode">
+              <option value="pvp">双人对战</option>
+              <option value="ai">人机对战（你执红）</option>
+              <option value="puzzle">残局 / 题库</option>
+            </select>
+          </label>
+          <div id="ai-controls" class="hidden">
+            <label>AI 难度
+              <select id="ai-level">
+                <option value="novice">新手（深度1）</option>
+                <option value="normal">普通（深度2）</option>
+                <option value="expert" selected>困难（深度3）</option>
+                <option value="master">大师（深度4）</option>
+                <option value="grandmaster">宗师（深度5）</option>
+              </select>
+            </label>
+            <label>每步限时
+              <select id="ai-steptime">
+                <option value="0" selected>不限时</option>
+                <option value="10">10 秒</option>
+                <option value="20">20 秒</option>
+                <option value="30">30 秒</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="status" class="status">点击红方棋子开始</div>
+
+        <!-- 对战控制 -->
+        <div id="group-game" class="controls">
+          <button id="btn-reset">新对局</button>
+          <button id="btn-undo" class="secondary">悔棋</button>
+          <button id="btn-resign" class="secondary">认输</button>
+        </div>
+
+        <!-- 题库控制 -->
+        <div id="group-puzzle" class="controls hidden">
+          <select id="puzzle-category">
+            <option value="mate1">一步杀</option>
+            <option value="mate2">两步杀</option>
+            <option value="mate3">三步杀</option>
+            <option value="endgame">实战残局</option>
+            <option value="classic">经典排局</option>
+          </select>
+          <label class="classic-pick">经典残局
+            <select id="classic-select"></select>
+          </label>
+          <button id="btn-hint" class="secondary">提示</button>
+          <button id="btn-answer" class="secondary">答案</button>
+          <button id="btn-prev-puzzle" class="secondary">上一题</button>
+          <button id="btn-next-puzzle" class="secondary">下一题</button>
+          <button id="btn-puzzle-reset" class="secondary">重做</button>
+        </div>
+
+        <!-- 题目信息 / 评级 / 复盘 -->
+        <div id="puzzle-meta" class="puzzle-meta hidden"></div>
+        <div id="puzzle-review" class="review hidden"></div>
+
+        <!-- 题库列表 -->
+        <fieldset id="puzzlelist-box" class="hidden">
+          <legend>题库列表</legend>
+          <ol id="puzzle-list" class="puzzle-list"></ol>
+        </fieldset>
+
+        <!-- 着法记录 + 回放 -->
+        <fieldset id="movelist-box">
+          <legend>着法记录</legend>
+          <div class="replay-bar">
+            <button id="btn-hist-prev" class="mini">◀ 上一步</button>
+            <button id="btn-hist-next" class="mini">下一步 ▶</button>
+            <button id="btn-hist-live" class="mini">回到当前</button>
+          </div>
+          <ol id="move-list" class="move-list"></ol>
+        </fieldset>
+
+        <!-- 统计中心（默认隐藏，点击右上角展开）-->
+        <fieldset id="stats-box" class="hidden">
+          <legend>统计中心</legend>
+          <div id="stats-content" class="stats-content"></div>
+          <div id="ach-list" class="ach-list"></div>
+          <div class="controls">
+            <button id="btn-stats-reset" class="secondary">重置统计</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>局面码（FEN）</legend>
+          <div class="fen-box">当前：<code id="fen"></code></div>
+          <div class="fen-actions">
+            <input id="fen-input" type="text" placeholder="粘贴 FEN 导入残局…" />
+            <button id="btn-fen-load" class="mini">导入</button>
+            <button id="btn-fen-copy" class="mini">复制/分享</button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>声音</legend>
+          <label><input type="checkbox" id="chk-mute" /> 静音</label>
+          <label>音量 <input type="range" id="rng-vol" min="0" max="1" step="0.05" value="0.6" /></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>调试</legend>
+          <label><input type="checkbox" id="chk-coords" checked /> 显示坐标</label>
+        </fieldset>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

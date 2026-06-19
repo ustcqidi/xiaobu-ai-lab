@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>小布的 AI 实验室 · Xiaobu AI Lab</title>
+<meta name="description" content="祁迪 × 小布 的周末编程项目：用 AI 把想法变成能玩、能动手的东西。从会思考的对手，到真实的虚拟实验台。" />
+<style>
+  :root {
+    --bg: #070a16;
+    --card: rgba(22, 30, 56, 0.72);
+    --line: rgba(255, 255, 255, 0.09);
+    --line-strong: rgba(255, 255, 255, 0.16);
+    --text: #eef2ff;
+    --muted: #94a0c4;
+    --accent: #6ea8fe;
+    --accent-2: #b794ff;
+    --pink: #ff7eb6;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* animated background orbs */
+  .bg-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.55;
+    animation: float 18s ease-in-out infinite;
+  }
+  .orb.a { width: 520px; height: 520px; background: #2a3aa8; top: -160px; right: -120px; }
+  .orb.b { width: 460px; height: 460px; background: #6b2aa8; bottom: -180px; left: -120px; animation-delay: -6s; }
+  .orb.c { width: 380px; height: 380px; background: #1d6fae; top: 40%; left: 55%; animation-delay: -11s; opacity: 0.35; }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -40px) scale(1.08); }
+  }
+
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: rgba(7, 10, 22, 0.6);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand .dot {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: 0 0 22px rgba(110, 168, 254, 0.55);
+  }
+  .nav-links { display: flex; gap: 26px; font-size: 14px; color: var(--muted); }
+  .nav-links a:hover { color: var(--text); }
+  @media (max-width: 560px) { .nav-links { display: none; } }
+
+  /* ---------- Hero ---------- */
+  header.hero { padding: 92px 0 56px; text-align: center; }
+  .eyebrow {
+    display: inline-block; font-size: 12.5px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--line-strong); border-radius: 999px;
+    padding: 7px 16px; background: rgba(110, 168, 254, 0.08);
+  }
+  h1 {
+    font-size: clamp(40px, 7.5vw, 76px); line-height: 1.05; margin: 26px 0 8px;
+    letter-spacing: -0.03em; font-weight: 800;
+    background: linear-gradient(115deg, #ffffff 0%, var(--accent) 50%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub-en { font-size: 14px; letter-spacing: 0.42em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .lede { font-size: clamp(16px, 2.3vw, 20px); color: #c2cae6; max-width: 620px; margin: 0 auto; }
+  .stats { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 44px; }
+  .stat {
+    border: 1px solid var(--line); border-radius: 16px; padding: 16px 26px; min-width: 120px;
+    background: var(--card); backdrop-filter: blur(8px);
+  }
+  .stat .num {
+    font-size: 30px; font-weight: 800;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .stat .label { font-size: 12.5px; color: var(--muted); }
+
+  /* ---------- Sections ---------- */
+  section { padding: 52px 0; }
+  .section-head { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 30px; flex-wrap: wrap; }
+  .section-head .txt h2 { font-size: clamp(26px, 4vw, 38px); margin: 4px 0 6px; letter-spacing: -0.02em; }
+  .section-head .txt p { color: var(--muted); margin: 0; max-width: 560px; }
+  .kicker { font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-2); font-weight: 700; }
+  .line-fill { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line-strong), transparent); margin-bottom: 14px; min-width: 40px; }
+
+  /* ---------- Cards ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+  .card {
+    position: relative; display: flex; flex-direction: column; overflow: hidden;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+    transition: transform 0.28s cubic-bezier(.2,.7,.2,1), border-color 0.28s, box-shadow 0.28s;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: var(--line-strong);
+    box-shadow: 0 30px 60px -30px rgba(110, 130, 255, 0.5);
+  }
+
+  .cover { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #0c1126; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.5s cubic-bezier(.2,.7,.2,1); }
+  .card:hover .cover img { transform: scale(1.06); }
+  .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,10,22,0) 45%, rgba(7,10,22,0.85) 100%); }
+
+  /* placeholder covers for upcoming projects */
+  .cover.ph { display: flex; align-items: center; justify-content: center; }
+  .cover.ph.chem { background: radial-gradient(120% 120% at 30% 20%, #1b3a4a, #0c1126); }
+  .cover.ph.math { background: radial-gradient(120% 120% at 70% 20%, #3a1b4a, #0c1126); }
+  .cover.ph .glyph { font-size: 64px; font-weight: 800; letter-spacing: 0.05em; color: rgba(255,255,255,0.14); }
+
+  .badge-num {
+    position: absolute; top: 14px; left: 14px; z-index: 2;
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; height: 28px; padding: 0 10px; border-radius: 9px;
+    font-weight: 800; font-size: 13px; color: #070a16;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2));
+    box-shadow: 0 6px 18px -6px rgba(110,168,254,0.8);
+  }
+  .status {
+    position: absolute; top: 14px; right: 14px; z-index: 2;
+    font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    backdrop-filter: blur(6px);
+  }
+  .status.live { color: #062013; background: rgba(74, 222, 128, 0.92); }
+  .status.local { color: #2a1c00; background: rgba(251, 191, 36, 0.92); }
+  .status.soon { color: var(--text); background: rgba(148, 160, 196, 0.2); border: 1px solid var(--line-strong); }
+
+  .body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+  .card h3 { margin: 0 0 9px; font-size: 21px; letter-spacing: -0.01em; }
+  .card p.desc { margin: 0 0 16px; color: var(--muted); font-size: 14px; flex: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+  .tag { font-size: 11.5px; color: #aebfe6; border: 1px solid var(--line); background: rgba(110,168,254,0.06); padding: 3px 9px; border-radius: 7px; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700;
+    padding: 10px 15px; border-radius: 11px; border: 1px solid var(--line-strong);
+    transition: background 0.18s, border-color 0.18s, transform 0.18s, filter 0.18s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { color: #070a16; background: linear-gradient(120deg, var(--accent), var(--accent-2)); border-color: transparent; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost:hover { border-color: var(--accent); background: rgba(110,168,254,0.1); }
+  .btn.disabled { color: var(--muted); border-style: dashed; cursor: default; pointer-events: none; }
+  .btn .arrow { transition: transform 0.18s; }
+  .btn:hover .arrow { transform: translateX(3px); }
+
+  .note {
+    margin-top: 26px; border: 1px dashed var(--line-strong); border-radius: var(--radius);
+    padding: 18px 22px; color: var(--muted); font-size: 14px; background: rgba(255,255,255,0.02);
+  }
+  .note strong { color: var(--text); }
+  .note a { color: var(--accent); }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 40px 0 64px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; }
+  .philosophy { max-width: 560px; }
+  .philosophy em { color: var(--accent); font-style: normal; }
+
+  @media (max-width: 600px) { header.hero { padding: 60px 0 36px; } }
+</style>
+</head>
+<body>
+
+<div class="bg-orbs"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> 小布的 AI 实验室</div>
+    <div class="nav-links">
+      <a href="#cs">游戏工坊</a>
+      <a href="#stem">AI 实验</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">祁迪 × 小布 · 周末编程</span>
+    <h1>小布的 AI 实验室</h1>
+    <div class="sub-en">Xiaobu&nbsp;·&nbsp;AI&nbsp;Lab</div>
+    <p class="lede">用 AI 把想法变成能玩、能动手的东西。从第一个能跑的程序，到会思考的对手；从书本上的抽象概念，到亲手操作的虚拟实验台。</p>
+    <div class="stats">
+      <div class="stat"><div class="num">2</div><div class="label">课程方向</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">动手项目</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">在线可玩</div></div>
+      <div class="stat"><div class="num">325</div><div class="label">象棋测试用例</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ CS 游戏工坊 ============ -->
+  <section id="cs">
+    <div class="section-head">
+      <div class="txt">
+        <div class="kicker">CS · 游戏工坊</div>
+        <h2>用 AI 造游戏</h2>
+        <p>项目驱动，技能跟着游戏走。每个游戏从「能跑」到「不崩」再到「好玩」，体验真实的迭代过程。</p>
+      </div>
+      <div class="line-fill"></div>
+    </div>
+
+    <div class="grid">
+
+      <article class="card">
+        <div class="cover">
+          <span class="badge-num">S03</span>
+          <span class="status live">在线可玩</span>
+          <img src="assets/covers/body-defense.jpg" alt="身体保卫战 游戏截图" loading="lazy" />
+        </div>
+        <div class="body">
+          <h3>身体保卫战</h3>
+          <p class="desc">《工作细胞》主题的免疫系统塔防：部署免疫细胞抵御细菌病毒入侵。单文件 HTML + Canvas，从皮肤伤口、肠道战场到癌细胞 BOSS 多关卡逐步推进。</p>
+          <div class="tags">
+            <span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">塔防</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="body-defense/index.html">开始玩 <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="cover">
+          <span class="badge-num">S04</span>
+          <span class="status live">在线可玩</span>
+          <img src="assets/covers/chess.jpg" alt="中国象棋 游戏截图" loading="lazy" />
+        </div>
+        <div class="body">
+          <h3>中国象棋</h3>
+          <p class="desc">产品级象棋：人机 / 双人 / 残局题库三种模式，搜索 AI 五档难度（Alpha-Beta + 迭代加深），184 题自动生成题库，标准中文记谱、回放、统计与成就，325 项测试全过。</p>
+          <div class="tags">
+            <span class="tag">HTML5</span><span class="tag">ES6 模块</span><span class="tag">搜索 AI</span><span class="tag">无依赖</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="chess/index.html">开始下棋 <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ STEM AI 实验 ============ -->
+  <section id="stem">
+    <div class="section-head">
+      <div class="txt">
+        <div class="kicker">STEM · AI 编程实验</div>
+        <h2>用代码做实验</h2>
+        <p>拒绝死记硬背：把数理化的抽象概念，写成可操作的交互程序，亲手跑出结果再追问为什么。</p>
+      </div>
+      <div class="line-fill"></div>
+    </div>
+
+    <div class="grid">
+
+      <article class="card">
+        <div class="cover">
+          <span class="badge-num">物理</span>
+          <span class="status live">在线可玩</span>
+          <img src="assets/covers/physics.jpg" alt="物理虚拟实验台 截图" loading="lazy" />
+        </div>
+        <div class="body">
+          <h3>初中物理虚拟实验台</h3>
+          <p class="desc">复刻真实实验流程，不是滑块玩具。开放式电路沙盒（内置真实电路求解器，自动判断通路/断路/短路）、伏安法测电阻、探究浮力、杠杆平衡、凸透镜成像、电磁铁——每个实验含器材、步骤、指针表读数与数据记录表。</p>
+          <div class="tags">
+            <span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">电路求解器</span><span class="tag">单文件</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="physics-lab.html">打开实验台 <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="cover ph chem">
+          <span class="badge-num">化学</span>
+          <span class="status soon">待开发</span>
+          <span class="glyph">H₂O</span>
+        </div>
+        <div class="body">
+          <h3>化学实验可视化</h3>
+          <p class="desc">电解水（氢氧 2:1）、质量守恒天平、燃烧条件、金属活动性、溶解度曲线——把九年级核心定量实验做成可交互动画，方程式实时配平。</p>
+          <div class="tags">
+            <span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">规划中</span>
+          </div>
+          <div class="actions">
+            <span class="btn disabled">敬请期待</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="cover ph math">
+          <span class="badge-num">数学</span>
+          <span class="status soon">待开发</span>
+          <span class="glyph">a²+b²</span>
+        </div>
+        <div class="body">
+          <h3>中考数学探究器</h3>
+          <p class="desc">从安徽中考真题反推：勾股数生成器、三角板组合角度、图形变换、正多边形角度、圆综合、二次函数图像工厂——公式不靠背，靠拖动观察自己长出来。</p>
+          <div class="tags">
+            <span class="tag">HTML5</span><span class="tag">几何 / 函数</span><span class="tag">规划中</span>
+          </div>
+          <div class="actions">
+            <span class="btn disabled">敬请期待</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="philosophy">
+      <em>不死记语法，学会把想法说清楚、让 AI 实现、自己验收。</em><br />
+      每个项目都从一个真实问题出发，做到能给别人玩、给别人用为止。
+    </div>
+    <div>© 2026 祁迪 × 小布 · AI 实验室</div>
+  </div>
+</footer>
+
+</body>
+</html>
