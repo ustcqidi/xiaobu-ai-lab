@@ -81,8 +81,8 @@
     padding: 7px 16px; background: rgba(110, 168, 254, 0.08);
   }
   h1 {
-    font-size: clamp(40px, 7.5vw, 76px); line-height: 1.05; margin: 26px 0 8px;
-    letter-spacing: -0.03em; font-weight: 800;
+    font-size: clamp(32px, 8vw, 76px); line-height: 1.08; margin: 26px 0 8px;
+    letter-spacing: -0.03em; font-weight: 800; overflow-wrap: break-word;
     background: linear-gradient(115deg, #ffffff 0%, var(--accent) 50%, var(--accent-2) 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
@@ -168,6 +168,26 @@
   .btn.primary:hover { filter: brightness(1.08); }
   .btn.ghost:hover { border-color: var(--accent); background: rgba(110,168,254,0.1); }
   .btn.disabled { color: var(--muted); border-style: dashed; cursor: default; pointer-events: none; }
+
+  /* small-screen notice + toast */
+  .mobile-note { display: none; }
+  .toast-tip {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(16px);
+    z-index: 200; max-width: 86vw; text-align: center;
+    background: linear-gradient(120deg, var(--accent), var(--accent-2)); color: #070a16;
+    font-size: 14.5px; font-weight: 700; padding: 13px 22px; border-radius: 14px;
+    box-shadow: 0 18px 40px -16px rgba(110,168,254,0.7);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s;
+  }
+  .toast-tip.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 820px) {
+    .mobile-note {
+      display: block; text-align: center; line-height: 1.6;
+      font-size: 13.5px; color: #fff7e6; padding: 11px 18px;
+      background: linear-gradient(90deg, rgba(251,191,36,0.16), rgba(255,126,182,0.16));
+      border-bottom: 1px solid var(--line);
+    }
+  }
   .btn .arrow { transition: transform 0.18s; }
   .btn:hover .arrow { transform: translateX(3px); }
 
@@ -184,7 +204,11 @@
   .philosophy { max-width: 560px; }
   .philosophy em { color: var(--accent); font-style: normal; }
 
-  @media (max-width: 600px) { header.hero { padding: 60px 0 36px; } }
+  @media (max-width: 600px) {
+    header.hero { padding: 48px 0 32px; }
+    .sub-en { letter-spacing: 0.28em; }
+    .lede-sub br { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -200,6 +224,8 @@
     </div>
   </div>
 </nav>
+
+<div class="mobile-note">游戏与实验需要在电脑浏览器中运行，手机 / 小屏设备暂不支持进入，请用电脑访问。</div>
 
 <header class="hero">
   <div class="wrap">
@@ -347,6 +373,26 @@
     <div>© 2026 祁迪 × 小布 · AI 实验室</div>
   </div>
 </footer>
+
+<div id="toast-tip" class="toast-tip">请在电脑浏览器访问</div>
+
+<script>
+  (function () {
+    var small = window.matchMedia('(max-width: 820px)');
+    var toast = document.getElementById('toast-tip');
+    var timer;
+    function showTip() {
+      toast.classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(function () { toast.classList.remove('show'); }, 2800);
+    }
+    document.querySelectorAll('a.btn.primary').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        if (small.matches) { e.preventDefault(); showTip(); }
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>

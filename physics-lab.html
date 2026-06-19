@@ -118,10 +118,16 @@
       <div class="navitem" data-go="joule"><span class="ic">🔥</span>焦耳定律 · 电流热效应</div>
       <div class="navitem" data-go="circuit"><span class="ic">💡</span>串联与并联</div>
       <div class="navitem" data-go="magnet"><span class="ic">🧲</span>电磁铁</div>
+      <div class="navitem" data-go="induce"><span class="ic">🌀</span>电磁感应 · 发电机</div>
+      <div class="navitem" data-go="motor"><span class="ic">⚙️</span>电动机原理</div>
       <div class="navitem" data-go="house"><span class="ic">🏠</span>家庭电路与安全用电<span class="badge" style="margin-left:auto">P5</span></div>
     </div>
     <div class="navgroup">
       <div class="label"><span class="dot" style="background:var(--mech)"></span>力 学</div>
+      <div class="navitem" data-go="density"><span class="ic">⚗️</span>测量物质的密度</div>
+      <div class="navitem" data-go="friction"><span class="ic">🧱</span>探究滑动摩擦力</div>
+      <div class="navitem" data-go="pressure"><span class="ic">💧</span>探究液体压强</div>
+      <div class="navitem" data-go="pulley"><span class="ic">🔩</span>滑轮组机械效率</div>
       <div class="navitem" data-go="buoyancy"><span class="ic">🛟</span>探究浮力 · 阿基米德原理</div>
       <div class="navitem" data-go="lever"><span class="ic">⚖️</span>杠杆平衡条件</div>
     </div>
@@ -430,6 +436,118 @@
     </div>
   </section>
 
+  <!-- ===== 电磁感应 / 发电机 ===== -->
+  <section id="induce" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--elec)">电与磁 · 中考⭐⭐⭐⭐</span>
+      <h2>🌀 电磁感应 · 发电机</h2>
+      <p>"磁生电"：闭合电路的一部分导体在磁场里<b style="color:#fff">做切割磁感线运动</b>，就会产生感应电流。这是发电机的原理。</p>
+    </div>
+
+    <div class="card concept">
+      <h3><span class="bar"></span>核心概念</h3>
+      <ul>
+        <li>产生条件：① 电路<b style="color:#fff">闭合</b> ② 导体<b style="color:#fff">切割磁感线</b>（沿磁感线方向运动则不产生）。</li>
+        <li>感应电流<b style="color:#fff">方向</b>：跟导体运动方向、磁场方向都有关（用<span class="key">右手定则</span>判断）；其中一个反向，电流就反向。</li>
+        <li>感应电流<b style="color:#fff">大小</b>：导体运动越快、磁场越强，电流越大。</li>
+        <li><b style="color:#fff">发电机</b>：线圈在磁场中转动 → 不断改变切割方向 → 产生<span class="key">交流电</span>（方向周期性改变）。它把机械能转化为电能。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini" id="indMini"></span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="indCv" width="760" height="400"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>实验模式</label>
+            <div class="seg" id="indMode"><button class="on" data-m="rod">导体切割磁感线</button><button data-m="gen">发电机(交流)</button></div>
+          </div>
+          <div class="ctrl" id="indMoveWrap">
+            <label>导体运动</label>
+            <div class="seg" id="indMove"><button data-v="0">静止</button><button class="on" data-v="1">向右→</button><button data-v="-1">←向左</button><button data-v="2">往复</button></div>
+          </div>
+          <div class="ctrl"><label id="indSpeedLab">运动速度 <b><span id="indSpeedV">1.5</span></b></label><input type="range" id="indSpeed" min="0.5" max="3" step="0.1" value="1.5"></div>
+          <div class="ctrl"><label>磁场方向</label><div class="seg" id="indField"><button class="on" data-f="1">出纸面 ⊙</button><button data-f="-1">入纸面 ×</button></div></div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="indI" style="color:var(--accent2);font-size:15px">—</div><div class="k">感应电流(相对)</div></div>
+            <div class="kv"><div class="v" id="indDir" style="color:var(--warn);font-size:15px">无</div><div class="k">电流方向</div></div>
+          </div>
+          <div class="status good" id="indTip"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card exam">
+      <h3><span class="bar" style="background:var(--accent2)"></span>中考真题演练</h3>
+      <div class="q">关于电磁感应，下列说法正确的是：</div>
+      <div class="opts" data-answer="d">
+        <div class="opt" data-k="a">A. 只要导体在磁场中就产生感应电流</div>
+        <div class="opt" data-k="b">B. 导体沿磁感线方向运动也能产生感应电流</div>
+        <div class="opt" data-k="c">C. 感应电流方向只跟磁场方向有关</div>
+        <div class="opt" data-k="d">D. 闭合电路中导体做切割磁感线运动时才产生感应电流，方向跟运动方向和磁场方向都有关</div>
+      </div>
+      <button class="btn" style="margin-top:12px" data-explain>查看解析</button>
+      <div class="explain">
+        必须<b>电路闭合</b>且导体<b>切割磁感线</b>才有感应电流（沿磁感线方向运动不切割→无电流，排除 B）。仅放在磁场中不动也没有（排除 A）。方向同时取决于<b>运动方向和磁场方向</b>（排除 C）。答案 <b>D</b>。<br>
+        在实验台选"静止"→电流计不动；选"向右/向左"→指针反向偏转；切换磁场方向→也反向。
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 电动机原理 ===== -->
+  <section id="motor" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--elec)">电与磁 · 中考⭐⭐⭐⭐</span>
+      <h2>⚙️ 电动机原理</h2>
+      <p>"电动生力"：通电导体在磁场中会<b style="color:#fff">受到力的作用</b>。线圈两条边受力方向相反，形成转动，再靠<b style="color:#fff">换向器</b>持续同向旋转。这是电动机的原理。</p>
+    </div>
+
+    <div class="card concept">
+      <h3><span class="bar"></span>核心概念</h3>
+      <ul>
+        <li>通电导体在磁场中受力，方向用<span class="key">左手定则</span>：让磁感线穿过手心，四指指<b style="color:#fff">电流</b>方向，大拇指指<b style="color:#fff">受力</b>方向。</li>
+        <li>线圈两条边电流方向相反 → 受力一上一下 → 产生转动。</li>
+        <li><b style="color:#fff">换向器(电刷+换向片)</b>：线圈每转过平衡位置就自动改变电流方向，让线圈<span class="key">持续朝同一方向转</span>。没有它，线圈会停在平衡位置摆动。</li>
+        <li>改变<b style="color:#fff">电流方向</b>或<b style="color:#fff">磁场方向</b>，转动方向就反过来；电流越大转得越快。电动机把电能转化为机械能。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini">端视图：看线圈在磁场中受力转动</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="motCv" width="760" height="400"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>电流大小（转速）<b><span id="motIv">3</span></b></label><input type="range" id="motI" min="0" max="6" step="1" value="3"></div>
+          <div class="ctrl"><label>电流方向</label><div class="seg" id="motCur"><button class="on" data-c="1">正向</button><button data-c="-1">反向</button></div></div>
+          <div class="ctrl"><label>磁场方向</label><div class="seg" id="motField"><button class="on" data-f="1">N左 S右</button><button data-f="-1">N右 S左</button></div></div>
+          <div class="ctrl"><label>换向器</label><div class="seg" id="motCom"><button class="on" data-k="1">有（持续转）</button><button data-k="0">无（会停）</button></div></div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="motState" style="color:var(--accent2);font-size:14px">持续转动</div><div class="k">运转状态</div></div>
+            <div class="kv"><div class="v" id="motTurn" style="color:var(--warn);font-size:14px">逆时针</div><div class="k">转动方向</div></div>
+          </div>
+          <div class="status good" id="motTip"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card exam">
+      <h3><span class="bar" style="background:var(--accent2)"></span>中考真题演练</h3>
+      <div class="q">直流电动机中换向器的作用是：</div>
+      <div class="opts" data-answer="b">
+        <div class="opt" data-k="a">A. 增大线圈中的电流</div>
+        <div class="opt" data-k="b">B. 当线圈转过平衡位置时自动改变线圈中电流方向，使线圈持续同向转动</div>
+        <div class="opt" data-k="c">C. 把交流电变成直流电</div>
+        <div class="opt" data-k="d">D. 增强磁场</div>
+      </div>
+      <button class="btn" style="margin-top:12px" data-explain>查看解析</button>
+      <div class="explain">
+        线圈转到平衡位置（线圈平面与磁场垂直）时，若不换向，惯性冲过后受力会让它转回来 → 只能来回摆动。换向器在此刻<b>自动改变电流方向</b>，使受力方向不变，线圈就能<b>持续朝一个方向转</b>。答案 <b>B</b>。<br>
+        在实验台把"换向器"切到"无"，看线圈摆几下就停在平衡位置；切回"有"，持续转动。
+      </div>
+    </div>
+  </section>
+
   <!-- ===== P5 家庭电路与安全用电 ===== -->
   <section id="house" class="page hidden">
     <div class="pagehead">
@@ -647,6 +765,256 @@
         在实验台把 R₁=5、R₂=10，通电后看右瓶液柱升得更高（Q₂ 约是 Q₁ 的 2 倍）。<br>
         ⚠ 若是<b>并联</b>，电压相同，Q=U²t/R，则 Q 与 R 成<b>反比</b>，结论相反！
       </div>
+    </div>
+  </section>
+
+  <!-- ===== 测量物质的密度 ===== -->
+  <section id="density" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--mech)">力学 · 中考必考实验⭐⭐⭐⭐⭐</span>
+      <h2>⚗️ 测量物质的密度</h2>
+      <p>真实做法：用<b style="color:#fff">天平测质量 m</b>，用<b style="color:#fff">量筒(排水法)测体积 V</b>，再算 <span class="formula">ρ = m / V</span>。</p>
+    </div>
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>实验步骤 & 关键</h3>
+        <ul>
+          <li>天平：先<b style="color:#fff">放平、游码归零、调平衡螺母</b>使指针指中央；称量时"<b style="color:#fff">左物右码</b>"，加减砝码并移动游码到再次平衡。</li>
+          <li>读质量：<span class="formula">m = 砝码总质量 + 游码读数</span>。</li>
+          <li>量筒：读数时视线要与<b style="color:#fff">凹液面最低处相平</b>；固体用<span class="key">排水法</span> V=V₂−V₁。</li>
+          <li>顺序很重要：应<b style="color:#fff">先测质量、后测体积</b>（先沾水会使质量偏大→ρ偏大）。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>误差分析（常考）</h3>
+        <ul>
+          <li>量筒读数<b style="color:#fff">俯视</b>→读数偏大；<b style="color:#fff">仰视</b>→读数偏小。</li>
+          <li>先测体积再测质量：物体沾水→m偏大→<b style="color:#fff">ρ偏大</b>。</li>
+          <li>砝码生锈/磨损都会带来系统误差。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini" id="denMini">左物右码，调到指针居中</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="denCv" width="760" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>待测物体</label><div class="seg" id="denObj"><button class="on" data-o="iron">铁块</button><button data-o="alu">铝块</button><button data-o="stone">小石块</button></div></div>
+          <div class="ctrl"><label>加砝码（右盘）</label>
+            <div class="toolbar" style="flex-wrap:wrap">
+              <button class="btn" data-w="50">+50g</button><button class="btn" data-w="20">+20g</button>
+              <button class="btn" data-w="10">+10g</button><button class="btn" data-w="5">+5g</button>
+              <button class="btn ghost" id="denWClr">清空砝码</button>
+            </div>
+          </div>
+          <div class="ctrl"><label>游码 <b><span id="denRiderV">0.0</span> g</b>（分度0.2g）</label><input type="range" id="denRider" min="0" max="5" step="0.2" value="0"></div>
+          <div class="ctrl"><label>量筒初始水量 V₁ <b><span id="denV1v">20</span> mL</b></label><input type="range" id="denV1" min="10" max="40" step="1" value="20"></div>
+          <div class="toolbar">
+            <button class="btn primary" id="denDrop">放入物体到量筒</button>
+            <button class="btn ghost" id="denTake">取出</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="denM" style="color:var(--accent)">—</div><div class="k">质量 m/g</div></div>
+            <div class="kv"><div class="v" id="denV" style="color:var(--mech)">—</div><div class="k">体积 V/mL</div></div>
+            <div class="kv"><div class="v" id="denRho" style="color:var(--accent2)">—</div><div class="k">ρ=m/V (g/cm³)</div></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="denRec" disabled>＋ 记录这组数据</button>
+            <button class="btn ghost" id="denClr">清空表格</button>
+          </div>
+          <div class="status good" id="denTip"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>数据记录表</h3>
+      <table class="dtable"><thead>
+        <tr><th>次数</th><th>物体</th><th>m/g</th><th>V₁/mL</th><th>V₂/mL</th><th>V/mL</th><th>ρ/(g·cm⁻³)</th></tr>
+      </thead><tbody id="denTbody"></tbody></table>
+      <div class="concl" id="denConcl">测出 m 和 V 后，ρ=m/V 即可确定物质（铁≈7.9，铝≈2.7，常见石块≈2.6 g/cm³）。</div>
+    </div>
+    <div class="card exam">
+      <h3><span class="bar" style="background:var(--accent2)"></span>中考真题演练</h3>
+      <div class="q">某同学测金属块密度：天平读 m=79g；量筒先读 V₁=20mL，放入后 V₂=30mL。该金属是？</div>
+      <div class="opts" data-answer="b">
+        <div class="opt" data-k="a">A. 铝 (2.7)</div><div class="opt" data-k="b">B. 铁 (7.9)</div>
+        <div class="opt" data-k="c">C. 铜 (8.9)</div><div class="opt" data-k="d">D. 无法判断</div>
+      </div>
+      <button class="btn" style="margin-top:12px" data-explain>查看解析</button>
+      <div class="explain">V=V₂−V₁=30−20=10mL；ρ=m/V=79g÷10cm³=<b>7.9 g/cm³</b>，是铁。答案 <b>B</b>。</div>
+    </div>
+  </section>
+
+  <!-- ===== 探究滑动摩擦力 ===== -->
+  <section id="friction" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--mech)">力学 · 中考必考实验⭐⭐⭐⭐</span>
+      <h2>🧱 探究滑动摩擦力的大小与什么因素有关</h2>
+      <p>关键：用弹簧测力计<b style="color:#fff">水平匀速直线</b>拉动木块，由二力平衡得 <span class="formula">f = F示</span>。用控制变量法研究压力、接触面粗糙程度的影响。</p>
+    </div>
+    <div class="card concept">
+      <h3><span class="bar"></span>核心概念</h3>
+      <ul>
+        <li>必须<b style="color:#fff">匀速直线</b>拉动：此时摩擦力与拉力是一对平衡力，测力计示数才等于摩擦力。</li>
+        <li>滑动摩擦力大小：与<span class="key">压力大小</span>、<span class="key">接触面粗糙程度</span>有关；与接触面积、速度大小<b style="color:#fff">无关</b>。</li>
+        <li>控制变量：研究压力影响时保持接触面不变，只改变压力（在木块上加砝码）。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini">调拉力到"匀速"，示数才等于摩擦力</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="friCv" width="760" height="360"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>木块上加砝码（改变压力）</label><div class="seg" id="friLoad"><button class="on" data-n="0">不加(4N)</button><button data-n="1">+2N(6N)</button><button data-n="2">+4N(8N)</button></div></div>
+          <div class="ctrl"><label>接触面（改变粗糙程度）</label><div class="seg" id="friSurf"><button data-s="glass">玻璃(光滑)</button><button class="on" data-s="wood">木板</button><button data-s="towel">毛巾(粗糙)</button></div></div>
+          <div class="ctrl"><label>木块放法（探究与接触面积关系）</label><div class="seg" id="friArea"><button class="on" data-a="flat">平放</button><button data-a="side">侧放</button></div></div>
+          <div class="ctrl"><label>水平拉力 F <b><span id="friFv">2.0</span> N</b></label><input type="range" id="friF" min="0" max="8" step="0.1" value="2"></div>
+          <button class="btn" id="friAuto">🅥 自动调到匀速</button>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="friState" style="color:var(--accent2);font-size:14px">静止</div><div class="k">木块状态</div></div>
+            <div class="kv"><div class="v" id="friRead" style="color:var(--warn)">—</div><div class="k">测得摩擦力 f/N</div></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="friRec" disabled>＋ 记录（需匀速）</button>
+            <button class="btn ghost" id="friClr">清空</button>
+          </div>
+          <div class="status good" id="friTip"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>数据记录表</h3>
+      <table class="dtable"><thead>
+        <tr><th>次数</th><th>压力(总重)/N</th><th>接触面</th><th>放法</th><th>摩擦力 f/N</th></tr>
+      </thead><tbody id="friTbody"></tbody></table>
+      <div class="concl" id="friConcl">对比"压力相同改接触面""接触面相同改压力""平放/侧放(面积变、压力接触面不变)"三组，得出结论。</div>
+    </div>
+    <div class="card exam">
+      <h3><span class="bar" style="background:var(--accent2)"></span>中考真题演练</h3>
+      <div class="q">用弹簧测力计拉木块在水平桌面上滑动，下列哪种情况测力计示数等于摩擦力？</div>
+      <div class="opts" data-answer="c">
+        <div class="opt" data-k="a">A. 加速拉动时</div><div class="opt" data-k="b">B. 静止不动时</div>
+        <div class="opt" data-k="c">C. 沿水平方向匀速直线拉动时</div><div class="opt" data-k="d">D. 任何情况下都相等</div>
+      </div>
+      <button class="btn" style="margin-top:12px" data-explain>查看解析</button>
+      <div class="explain">只有<b>匀速直线</b>运动时木块受力平衡，拉力与摩擦力是平衡力，示数才等于摩擦力。加速时拉力&gt;摩擦力；静止时是静摩擦不是滑动摩擦。答案 <b>C</b>。</div>
+    </div>
+  </section>
+
+  <!-- ===== 探究液体压强 ===== -->
+  <section id="pressure" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--mech)">力学 · 中考必考实验⭐⭐⭐⭐</span>
+      <h2>💧 探究液体内部的压强</h2>
+      <p>用<b style="color:#fff">U形管压强计</b>：探头橡皮膜受到的压强越大，U形管两边液面<b style="color:#fff">高度差 Δh 越大</b>。用控制变量法研究深度、方向、液体密度的影响。</p>
+    </div>
+    <div class="card concept">
+      <h3><span class="bar"></span>核心结论（要记牢）</h3>
+      <ul>
+        <li>液体内部<b style="color:#fff">向各个方向都有压强</b>。</li>
+        <li><b style="color:#fff">同种液体、同一深度</b>，各个方向压强相等。</li>
+        <li>同种液体，<b style="color:#fff">深度越深，压强越大</b>。</li>
+        <li><b style="color:#fff">同一深度</b>，液体密度越大，压强越大。</li>
+        <li>定量：<span class="formula">p = ρ液 · g · h</span>（h 是到液面的深度）。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini" id="preMini">看 U 形管高度差 Δh 的变化</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="preCv" width="760" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>探头深度 h <b><span id="preHv">8</span> cm</b></label><input type="range" id="preH" min="0" max="16" step="1" value="8"></div>
+          <div class="ctrl"><label>橡皮膜朝向</label><div class="seg" id="preDir"><button class="on" data-d="up">朝上</button><button data-d="down">朝下</button><button data-d="side">朝侧</button></div></div>
+          <div class="ctrl"><label>液体</label><div class="seg" id="preLiq"><button class="on" data-l="water">水 (1.0)</button><button data-l="salt">盐水 (1.1)</button></div></div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="preDh" style="color:var(--accent)">—</div><div class="k">高度差 Δh/mm</div></div>
+            <div class="kv"><div class="v" id="preP" style="color:var(--accent2)">—</div><div class="k">p=ρgh / Pa</div></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="preRec">＋ 记录这组数据</button>
+            <button class="btn ghost" id="preClr">清空</button>
+          </div>
+          <div class="status good" id="preTip"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>数据记录表</h3>
+      <table class="dtable"><thead>
+        <tr><th>次数</th><th>液体</th><th>深度h/cm</th><th>朝向</th><th>Δh/mm</th><th>p/Pa</th></tr>
+      </thead><tbody id="preTbody"></tbody></table>
+      <div class="concl" id="preConcl">对比"同深度改朝向(Δh不变)""同液体改深度(深则大)""同深度改液体(密度大则大)"三组得结论。</div>
+    </div>
+    <div class="card exam">
+      <h3><span class="bar" style="background:var(--accent2)"></span>中考真题演练</h3>
+      <div class="q">压强计探头在水中同一深度，分别朝上、朝下、朝侧，U形管高度差 Δh 的关系是？</div>
+      <div class="opts" data-answer="d">
+        <div class="opt" data-k="a">A. 朝下最大</div><div class="opt" data-k="b">B. 朝上最大</div>
+        <div class="opt" data-k="c">C. 朝侧最大</div><div class="opt" data-k="d">D. 三者相等</div>
+      </div>
+      <button class="btn" style="margin-top:12px" data-explain>查看解析</button>
+      <div class="explain">同种液体、<b>同一深度</b>处，向各个方向的压强<b>相等</b>，所以 Δh 相同。答案 <b>D</b>。</div>
+    </div>
+  </section>
+
+  <!-- ===== 滑轮组机械效率 ===== -->
+  <section id="pulley" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--mech)">力学 · 中考必考实验⭐⭐⭐⭐</span>
+      <h2>🔩 测量滑轮组的机械效率</h2>
+      <p>有用功 <span class="formula">W有=Gh</span>，总功 <span class="formula">W总=Fs</span>，机械效率 <span class="formula">η = W有 / W总 ×100%</span>。</p>
+    </div>
+    <div class="card concept">
+      <h3><span class="bar"></span>核心概念</h3>
+      <ul>
+        <li>n 段绳子承担动滑轮+重物，理想拉力 <span class="formula">F = (G+G动)/n</span>，绳端移动 <span class="formula">s = nh</span>。</li>
+        <li>额外功来自<b style="color:#fff">提升动滑轮</b>和摩擦，所以 η 总<b style="color:#fff">小于100%</b>。</li>
+        <li>同一滑轮组：<b style="color:#fff">提升的物体越重，η越高</b>（额外功占比变小）。</li>
+        <li>动滑轮越重 → 额外功越大 → η越低。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini">改变 G、G动、绳子段数看 η 变化</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="pulCv" width="760" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>物重 G <b><span id="pulGv">10</span> N</b></label><input type="range" id="pulG" min="4" max="20" step="1" value="10"></div>
+          <div class="ctrl"><label>动滑轮重 G动 <b><span id="pulGdv">1</span> N</b></label><input type="range" id="pulGd" min="0" max="4" step="0.5" value="1"></div>
+          <div class="ctrl"><label>承重绳段数 n</label><div class="seg" id="pulN"><button data-n="2">2段</button><button class="on" data-n="3">3段</button><button data-n="4">4段</button></div></div>
+          <div class="ctrl"><label>提升高度 h <b><span id="pulHv">1.0</span> m</b></label><input type="range" id="pulH" min="0.5" max="2" step="0.1" value="1"></div>
+          <button class="btn" id="pulLift">▶ 提升演示</button>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="pulF" style="color:var(--accent)">—</div><div class="k">拉力 F/N</div></div>
+            <div class="kv"><div class="v" id="pulEta" style="color:var(--accent2)">—</div><div class="k">机械效率 η</div></div>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="pulWu" style="color:var(--mech);font-size:14px">—</div><div class="k">W有=Gh /J</div></div>
+            <div class="kv"><div class="v" id="pulWt" style="color:var(--warn);font-size:14px">—</div><div class="k">W总=Fs /J</div></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="pulRec">＋ 记录这组数据</button>
+            <button class="btn ghost" id="pulClr">清空</button>
+          </div>
+          <div class="status good" id="pulTip"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="bar"></span>数据记录表</h3>
+      <table class="dtable"><thead>
+        <tr><th>次数</th><th>G/N</th><th>G动/N</th><th>n</th><th>F/N</th><th>s=nh/m</th><th>W有/J</th><th>W总/J</th><th>η</th></tr>
+      </thead><tbody id="pulTbody"></tbody></table>
+      <div class="concl" id="pulConcl">保持滑轮组不变、只增大 G，观察 η 升高 → "提越重效率越高"。</div>
+    </div>
+    <div class="card exam">
+      <h3><span class="bar" style="background:var(--accent2)"></span>中考真题演练</h3>
+      <div class="q">用同一滑轮组分别提起 5N 和 15N 的物体，关于机械效率 η：</div>
+      <div class="opts" data-answer="b">
+        <div class="opt" data-k="a">A. 提 5N 时 η 较高</div><div class="opt" data-k="b">B. 提 15N 时 η 较高</div>
+        <div class="opt" data-k="c">C. 两次 η 相同</div><div class="opt" data-k="d">D. 无法比较</div>
+      </div>
+      <button class="btn" style="margin-top:12px" data-explain>查看解析</button>
+      <div class="explain">额外功（提动滑轮、克服摩擦）基本不变，物体越重有用功越大，额外功占比越小，所以提 <b>15N</b> 时 η 较高。答案 <b>B</b>。</div>
     </div>
   </section>
 
@@ -890,7 +1258,13 @@ const homeData=[
   {id:'joule',em:'🔥',t:'焦耳定律',d:'Q=I²Rt·双瓶对比·电流热效应',p:'电'},
   {id:'circuit',em:'💡',t:'串联与并联',d:'断路判断、串分压并分流',p:'电'},
   {id:'magnet',em:'🧲',t:'电磁铁',d:'电生磁、安培定则、磁极',p:'电磁'},
+  {id:'induce',em:'🌀',t:'电磁感应·发电机',d:'切割磁感线生电·右手定则·交流电',p:'电磁'},
+  {id:'motor',em:'⚙️',t:'电动机原理',d:'磁场对电流力·左手定则·换向器',p:'电磁'},
   {id:'house',em:'🏠',t:'家庭电路与安全用电',d:'火线零线·保险丝·过载短路·触电漏电接地',p:'电·P5'},
+  {id:'density',em:'⚗️',t:'测量物质的密度',d:'天平称质量·量筒排水法·ρ=m/V·误差分析',p:'力·必考'},
+  {id:'friction',em:'🧱',t:'探究滑动摩擦力',d:'匀速拉动读测力计·控制变量(压力/粗糙度)',p:'力·必考'},
+  {id:'pressure',em:'💧',t:'探究液体压强',d:'U形压强计·深度/方向/密度的影响',p:'力·必考'},
+  {id:'pulley',em:'🔩',t:'滑轮组机械效率',d:'有用功/总功·η=W有/W总·影响因素',p:'力·必考'},
   {id:'buoyancy',em:'🛟',t:'阿基米德原理',d:'称重法+溢水法验证 F浮=G排',p:'力·必考'},
   {id:'lever',em:'⚖️',t:'杠杆平衡条件',d:'多组数据找 F₁L₁=F₂L₂',p:'力'},
   {id:'lens',em:'🔭',t:'凸透镜·光具座',d:'移屏对焦、记录u/v、成像规律',p:'光·必考'},
@@ -2005,6 +2379,177 @@ function renderTable(tbody,rows,cols,emptyMsg){
     ctx.fillStyle='#cdd2f5';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(`${name} ${rlab}=${R}Ω`,cx,top+h+18);
     ctx.fillStyle=color;ctx.font='11px sans-serif';ctx.fillText('Q='+Q.toFixed(0)+'J',cx,top-36);ctx.textAlign='left';}
   animators['joule']=frame;redraws['joule']=tipUpd;tipUpd();
+})();
+
+/* 公共：中央零位灵敏电流计 */
+function drawGalvo(ctx,cx,cy,val){ // val ∈ [-1,1]
+  ctx.save();
+  ctx.fillStyle='#11142b';ctx.strokeStyle='#3a3f6b';ctx.lineWidth=1.5;
+  roundRect(ctx,cx-46,cy-34,92,60,10);ctx.fill();ctx.stroke();
+  const py=cy+18,R=40,a0=-Math.PI*0.78,a1=-Math.PI*0.22;
+  ctx.strokeStyle='#4a5080';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,py,R,a0,a1);ctx.stroke();
+  ctx.fillStyle='#9aa0c7';ctx.font='9px sans-serif';ctx.textAlign='center';
+  ctx.fillText('−',cx-30,cy-16);ctx.fillText('0',cx,cy-20);ctx.fillText('+',cx+30,cy-16);
+  const ang=-Math.PI/2 + clamp(val,-1,1)*Math.PI*0.28;
+  ctx.strokeStyle=Math.abs(val)<0.02?'#9aa0c7':'#6ee7b7';ctx.lineWidth=2.2;
+  ctx.beginPath();ctx.moveTo(cx,py);ctx.lineTo(cx+R*0.92*Math.cos(ang),py+R*0.92*Math.sin(ang));ctx.stroke();
+  ctx.fillStyle='#6ee7b7';ctx.beginPath();ctx.arc(cx,py,3,0,7);ctx.fill();
+  ctx.fillStyle='#9aa0c7';ctx.font='10px sans-serif';ctx.fillText('灵敏电流计',cx,cy-24);
+  ctx.textAlign='left';ctx.restore();
+}
+
+/* ============================================================
+   电磁感应 / 发电机
+============================================================ */
+(function(){
+  const cv=document.getElementById('indCv'),ctx=cv.getContext('2d');const $=id=>document.getElementById(id);
+  let mode='rod',moveMode=1,speed=1.5,fieldDir=1;
+  let rodX=440,oscθ=0,genθ=0,curRel=0,last=performance.now();
+  function segBind(id,fn){document.querySelectorAll('#'+id+' button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(b.dataset.m||b.dataset.v||b.dataset.f);}));}
+  segBind('indMode',v=>{mode=v;$('indMoveWrap').style.display=mode==='rod'?'':'none';$('indSpeedLab').childNodes[0].nodeValue=mode==='rod'?'运动速度 ':'转速 ';upd();});
+  segBind('indMove',v=>{moveMode=+v;upd();});
+  segBind('indField',v=>{fieldDir=+v;upd();});
+  $('indSpeed').addEventListener('input',e=>{speed=+e.target.value;$('indSpeedV').textContent=speed.toFixed(1);});
+  function upd(){const tip=$('indTip');
+    if(mode==='gen'){tip.className='status good';tip.textContent='线圈在磁场中不停转动，切割方向周期性改变 → 产生交流电(电流方向来回变)。这就是发电机：机械能→电能。';return;}
+    if(moveMode===0){tip.className='status warn';tip.textContent='导体静止，没有切割磁感线 → 没有感应电流，电流计指针不动。';}
+    else{tip.className='status good';tip.textContent='导体切割磁感线 → 产生感应电流。改变运动方向或磁场方向，电流方向(指针偏转)就反过来；运动越快指针偏得越大。用右手定则判断方向。';}}
+  function fieldSyms(x0,y0,x1,y1){ctx.fillStyle='#6b7099';ctx.strokeStyle='#6b7099';ctx.lineWidth=1.3;
+    for(let x=x0+24;x<x1;x+=44)for(let y=y0+24;y<y1;y+=42){
+      if(fieldDir>0){ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.stroke();ctx.beginPath();ctx.arc(x,y,1,0,7);ctx.fill();}
+      else{ctx.beginPath();ctx.moveTo(x-3,y-3);ctx.lineTo(x+3,y+3);ctx.moveTo(x+3,y-3);ctx.lineTo(x-3,y+3);ctx.stroke();}}}
+  function frame(){const now=performance.now();const dt=Math.min(0.05,(now-last)/1000);last=now;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    if(mode==='rod'){
+      const T=120,B=290,Lx=170,Rx=700;let v=0;
+      if(moveMode===1){v=speed;rodX+=v*55*dt;if(rodX>Rx-20)rodX=Lx+40;}
+      else if(moveMode===-1){v=-speed;rodX+=v*55*dt;if(rodX<Lx+40)rodX=Rx-20;}
+      else if(moveMode===2){oscθ+=dt*speed;rodX=430+200*Math.sin(oscθ);v=Math.cos(oscθ)*speed;}
+      const vn=clamp(v/3,-1,1);curRel=vn*fieldDir;
+      // 磁场区
+      ctx.fillStyle='rgba(91,140,255,.05)';ctx.fillRect(Lx,T,Rx-Lx,B-T);fieldSyms(Lx,T,Rx,B);
+      ctx.fillStyle='#6b7099';ctx.font='11px sans-serif';ctx.fillText(fieldDir>0?'磁场 ⊙ 垂直纸面向外':'磁场 × 垂直纸面向里',Lx,T-8);
+      // 导轨
+      ctx.strokeStyle='#8b90c0';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(110,T);ctx.lineTo(Rx,T);ctx.moveTo(110,B);ctx.lineTo(Rx,B);ctx.stroke();
+      // 电流计(左)
+      ctx.strokeStyle='#8b90c0';ctx.beginPath();ctx.moveTo(110,T);ctx.lineTo(110,cv.height*0.5-34+( (T+B)/2-(cv.height*0.5)) );ctx.stroke();
+      drawGalvo(ctx,110,(T+B)/2,curRel);
+      ctx.beginPath();ctx.moveTo(110,(T+B)/2+26);ctx.lineTo(110,B);ctx.stroke();
+      // 导体棒
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(rodX,T);ctx.lineTo(rodX,B);ctx.stroke();
+      ctx.fillStyle='#cdd2f5';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('导体棒',rodX,B+18);ctx.textAlign='left';
+      // 运动箭头
+      if(Math.abs(v)>0.01){const dir=Math.sign(v);ctx.strokeStyle='#6ee7b7';ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(rodX,(T+B)/2);ctx.lineTo(rodX+dir*34,(T+B)/2);ctx.stroke();
+        ctx.fillStyle='#6ee7b7';ctx.beginPath();ctx.moveTo(rodX+dir*34,(T+B)/2);ctx.lineTo(rodX+dir*26,(T+B)/2-5);ctx.lineTo(rodX+dir*26,(T+B)/2+5);ctx.fill();}
+      // 电流动画
+      if(Math.abs(curRel)>0.02){let loop=[[rodX,T],[110,T],[110,B],[rodX,B],[rodX,T]];if(curRel<0)loop=loop.slice().reverse();
+        drawFlowDots(ctx,loop,now/1000*60*Math.abs(curRel*3),Math.abs(curRel),'#fbbf24');}
+      $('indI').textContent=Math.abs(curRel)<0.02?'0':Math.abs(curRel).toFixed(2);
+      $('indDir').textContent=Math.abs(curRel)<0.02?'无':(curRel>0?'＋(右偏)':'−(左偏)');
+      $('indMini').textContent=Math.abs(curRel)<0.02?'⚪ 无电流':'🟢 有感应电流';
+    }else{ // 发电机
+      genθ+=dt*speed*1.4;const emf=Math.sin(genθ)*fieldDir;curRel=emf;
+      const cx=250,cy=200;
+      // 磁极
+      ctx.fillStyle='rgba(248,113,113,.18)';ctx.fillRect(cx-150,cy-90,40,180);
+      ctx.fillStyle='rgba(91,140,255,.18)';ctx.fillRect(cx+110,cy-90,40,180);
+      ctx.fillStyle='#f87171';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.fillText('N',cx-130,cy+7);
+      ctx.fillStyle='#5b8cff';ctx.fillText('S',cx+130,cy+7);
+      // 磁感线
+      ctx.strokeStyle='#6b7099';ctx.lineWidth=1.2;for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(cx-108,cy+i*30);ctx.lineTo(cx+108,cy+i*30);ctx.stroke();
+        ctx.fillStyle='#6b7099';ctx.beginPath();ctx.moveTo(cx+10,cy+i*30);ctx.lineTo(cx,cy+i*30-4);ctx.lineTo(cx,cy+i*30+4);ctx.fill();}
+      // 转动线圈(端视：一条转动的边)
+      const r=70,c=Math.cos(genθ),s=Math.sin(genθ);
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(cx-r*c,cy-r*s);ctx.lineTo(cx+r*c,cy+r*s);ctx.stroke();
+      ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(cx-r*c,cy-r*s,7,0,7);ctx.fill();ctx.beginPath();ctx.arc(cx+r*c,cy+r*s,7,0,7);ctx.fill();
+      ctx.fillStyle='#cdd2f5';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('线圈转动',cx,cy+96);ctx.textAlign='left';
+      // 电流计
+      drawGalvo(ctx,cx,cy-150,emf);
+      // 正弦输出
+      const gx=470,gw=270,gy=200,gh=140;
+      ctx.strokeStyle='#3a3f6b';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx+gw,gy);ctx.moveTo(gx+10,gy-gh/2);ctx.lineTo(gx+10,gy+gh/2);ctx.stroke();
+      ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.fillText('感应电流 i ~ 时间 t（交流电）',gx+20,gy-gh/2-6);
+      ctx.strokeStyle='#6ee7b7';ctx.lineWidth=2;ctx.beginPath();
+      for(let px=0;px<gw-12;px++){const ph=genθ-(px)*0.05;const y=gy-Math.sin(ph)*fieldDir*(gh/2-6);if(px===0)ctx.moveTo(gx+12+px,y);else ctx.lineTo(gx+12+px,y);}ctx.stroke();
+      ctx.fillStyle='#9aa0c7';ctx.font='10px sans-serif';ctx.fillText('+',gx-2,gy-gh/2+8);ctx.fillText('−',gx-2,gy+gh/2);
+      $('indI').textContent=Math.abs(emf).toFixed(2);
+      $('indDir').textContent=emf>0.02?'＋':emf<-0.02?'−':'0(换向瞬间)';
+      $('indMini').textContent='🔄 交流电';
+    }}
+  animators['induce']=frame;redraws['induce']=upd;upd();
+})();
+
+/* ============================================================
+   电动机原理（真力矩积分 + 换向器）
+============================================================ */
+(function(){
+  const cv=document.getElementById('motCv'),ctx=cv.getContext('2d');const $=id=>document.getElementById(id);
+  let I=3,curDir=1,fieldDir=1,com=1;
+  let θ=0.3,ω=0,last=performance.now();
+  function segBind(id,fn){document.querySelectorAll('#'+id+' button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');fn(b);}));}
+  $('motI').addEventListener('input',e=>{I=+e.target.value;$('motIv').textContent=I;});
+  segBind('motCur',b=>{curDir=+b.dataset.c;});
+  segBind('motField',b=>{fieldDir=+b.dataset.f;});
+  segBind('motCom',b=>{com=+b.dataset.k;});
+  function frame(){const now=performance.now();const dt=Math.min(0.05,(now-last)/1000);last=now;
+    const baseDir=curDir*fieldDir;
+    const comFactor = com? (Math.cos(θ)>=0?1:-1) : 1;     // 换向器：每过平衡位置翻转电流
+    const torque = 2.2*I*Math.cos(θ)*baseDir*comFactor;
+    ω += (torque - 1.3*ω)*dt; θ += ω*dt;
+    if(I===0 && Math.abs(ω)<0.02) ω=0;
+    // 绘制
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const cx=300,cy=200;
+    // 磁极
+    ctx.fillStyle='rgba(248,113,113,.18)';ctx.fillRect(cx-180,cy-100,46,200);
+    ctx.fillStyle='rgba(91,140,255,.18)';ctx.fillRect(cx+134,cy-100,46,200);
+    const NleftIsN=fieldDir>0;
+    ctx.fillStyle='#f87171';ctx.font='bold 22px sans-serif';ctx.textAlign='center';
+    ctx.fillText(NleftIsN?'N':'S',cx-157,cy+8);ctx.fillStyle='#5b8cff';ctx.fillText(NleftIsN?'S':'N',cx+157,cy+8);
+    // 磁感线(方向 N→S)
+    ctx.strokeStyle='#6b7099';ctx.lineWidth=1.2;const fdir=NleftIsN?1:-1;
+    for(let i=-2;i<=2;i++){const y=cy+i*34;ctx.beginPath();ctx.moveTo(cx-132,y);ctx.lineTo(cx+132,y);ctx.stroke();
+      ctx.fillStyle='#6b7099';const ax=cx+ (fdir>0?14:-14);ctx.beginPath();ctx.moveTo(ax,y);ctx.lineTo(ax-fdir*8,y-4);ctx.lineTo(ax-fdir*8,y+4);ctx.fill();}
+    // 转轴
+    ctx.fillStyle='#9aa0c7';ctx.beginPath();ctx.arc(cx,cy,4,0,7);ctx.fill();
+    // 线圈(端视：一条边)
+    const r=78,c=Math.cos(θ),s=Math.sin(θ);
+    const P1=[cx+r*c,cy+r*s],P2=[cx-r*c,cy-r*s];
+    ctx.strokeStyle='#cf9b53';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(P1[0],P1[1]);ctx.lineTo(P2[0],P2[1]);ctx.stroke();
+    // 电流符号 ⊙/⊗（随换向器/电流方向）
+    const sgn = curDir*comFactor;
+    drawDot(P1[0],P1[1], sgn>0);
+    drawDot(P2[0],P2[1], sgn<0);
+    // 受力箭头（旋转切向，∝ I*|cosθ|）
+    const Fm=18+40*Math.abs(Math.cos(θ))*(I/6);
+    const tdir=Math.sign(torque)||1;
+    forceArrow(P1[0],P1[1], -s*tdir, c*tdir, Fm);
+    forceArrow(P2[0],P2[1], s*tdir, -c*tdir, Fm);
+    // 状态
+    const spinning=Math.abs(ω)>0.15;
+    let state,turn;
+    if(I===0){state='不转(无电流)';turn='—';}
+    else if(com){state='持续转动';turn=ω>0?'顺时针':'逆时针';}
+    else{state=spinning?'转动中…(会停)':'停在平衡位置';turn=spinning?(ω>0?'顺时针':'逆时针'):'静止(平衡)';}
+    $('motState').textContent=state;$('motTurn').textContent=turn;
+    const tip=$('motTip');
+    if(I===0){tip.className='status warn';tip.textContent='电流为 0，线圈不受力，不转动。';}
+    else if(com){tip.className='status good';tip.textContent='换向器在每次经过平衡位置时翻转电流方向，使受力方向始终推动同向旋转 → 线圈持续转动。改电流/磁场方向可换转向，电流越大转越快。';}
+    else{tip.className='status bad';tip.textContent='没有换向器：线圈转到平衡位置后受力方向不再帮助旋转，于是来回摆动、最终停在平衡位置。这就是为什么电动机必须有换向器。';}
+    // 左手定则提示
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.fillText('🖐 左手定则：磁感线穿过手心，四指指电流，拇指指受力方向',cx-180,cy+120);}
+  function drawDot(x,y,out){ctx.save();ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.fillStyle='#0b0e22';ctx.fill();ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle='#fbbf24';ctx.fillStyle='#fbbf24';if(out){ctx.beginPath();ctx.arc(x,y,2.5,0,7);ctx.fill();}
+    else{ctx.beginPath();ctx.moveTo(x-5,y-5);ctx.lineTo(x+5,y+5);ctx.moveTo(x+5,y-5);ctx.lineTo(x-5,y+5);ctx.stroke();}ctx.restore();}
+  function forceArrow(x,y,dx,dy,m){const L=Math.hypot(dx,dy)||1;dx/=L;dy/=L;const ex=x+dx*m,ey=y+dy*m;
+    ctx.strokeStyle='#f87171';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.stroke();
+    const a=Math.atan2(dy,dx);ctx.fillStyle='#f87171';ctx.beginPath();ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-9*Math.cos(a-0.4),ey-9*Math.sin(a-0.4));ctx.lineTo(ex-9*Math.cos(a+0.4),ey-9*Math.sin(a+0.4));ctx.closePath();ctx.fill();
+    ctx.fillStyle='#f87171';ctx.font='11px sans-serif';ctx.fillText('F',ex+dx*8,ey+dy*8);}
+  animators['motor']=frame;redraws['motor']=()=>{};
 })();
 
 show('home');
