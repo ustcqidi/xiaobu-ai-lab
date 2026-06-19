@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初中化学虚拟实验室 · 小布的化学实验台</title>
+<style>
+  :root{
+    --bg:#0d1a17; --panel:#13241f; --panel2:#1a302a; --line:#234039;
+    --txt:#e7f4ee; --muted:#8fb3a6; --accent:#22c39a; --accent2:#7be3c0;
+    --gas:#38bdf8; --inquiry:#f59e0b; --acid:#fb7185; --solution:#a78bfa; --sep:#34d399;
+    --good:#34d399; --bad:#f87171; --warn:#fbbf24; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    background:radial-gradient(1200px 700px at 80% -10%,#1b3a31 0%,var(--bg) 55%);color:var(--txt);min-height:100vh}
+  a{color:var(--accent)}
+  .app{display:grid;grid-template-columns:272px 1fr;min-height:100vh}
+  .sidebar{background:linear-gradient(180deg,#102019,#0c1813);border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .brand .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#0ea5e9);font-size:20px;box-shadow:0 6px 18px rgba(34,195,154,.35)}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand p{margin:2px 0 0;font-size:11px;color:var(--muted)}
+  .navgroup{margin-top:16px}
+  .navgroup .label{font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin:0 8px 8px;display:flex;align-items:center;gap:6px}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .navitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;color:var(--muted);font-size:13.5px;transition:.15s;border:1px solid transparent}
+  .navitem:hover{background:var(--panel2);color:var(--txt)}
+  .navitem.active{background:linear-gradient(90deg,rgba(34,195,154,.18),transparent);color:#fff;border-color:var(--line)}
+  .navitem .ic{width:22px;text-align:center}
+  .main{padding:26px 32px 70px;max-width:1120px}
+  .pagehead{margin-bottom:18px}
+  .pagehead .tag{display:inline-block;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);margin-bottom:10px}
+  .pagehead h2{margin:0 0 6px;font-size:24px}
+  .pagehead p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .card h3{margin:0 0 12px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .card h3 .bar{width:4px;height:16px;border-radius:3px;background:var(--accent)}
+  .card h3 .mini{margin-left:auto;font-size:11px;color:var(--muted);font-weight:400}
+  .concept{background:linear-gradient(180deg,#13261f,#11211c)}
+  .concept ul{margin:6px 0 0;padding-left:20px;line-height:1.9;font-size:13.5px;color:#d4ece1}
+  .concept ol{margin:6px 0 0;padding-left:22px;line-height:1.9;font-size:13.5px;color:#d4ece1}
+  .formula{display:inline-block;background:#0a1713;border:1px solid var(--line);border-radius:8px;padding:2px 10px;font-family:ui-monospace,Menlo,monospace;color:var(--accent2);margin:0 2px}
+  .key{color:var(--warn);font-weight:600}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:980px){.twocol{grid-template-columns:1fr}}
+  .sim{display:grid;grid-template-columns:1fr 286px;gap:18px;align-items:start}
+  @media(max-width:900px){.sim{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:static;height:auto}}
+  .canvas-wrap{background:#081311;border:1px solid var(--line);border-radius:12px;padding:8px;position:relative}
+  canvas{width:100%;display:block;border-radius:8px}
+  .controls{display:flex;flex-direction:column;gap:13px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .ctrl label b{color:#fff;font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent);height:4px}
+  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+  .seg.col{flex-direction:column}
+  .seg button{flex:1;border:none;background:transparent;color:var(--muted);padding:7px;border-radius:7px;cursor:pointer;font-size:12.5px;transition:.15s}
+  .seg button.on{background:var(--accent);color:#04140f;font-weight:700}
+  .btn{border:1px solid var(--line);background:var(--panel2);color:var(--txt);padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;transition:.15s}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),#0ea5e9);border-color:transparent;color:#04140f;font-weight:700}
+  .btn.ghost{background:transparent}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  .status{padding:10px 12px;border-radius:10px;font-size:12.5px;line-height:1.55;border:1px solid var(--line)}
+  .status.good{background:rgba(52,211,153,.10);border-color:rgba(52,211,153,.4);color:#bbf7d0}
+  .status.warn{background:rgba(251,191,36,.10);border-color:rgba(251,191,36,.4);color:#fde68a}
+  .status.bad{background:rgba(248,113,113,.10);border-color:rgba(248,113,113,.4);color:#fecaca}
+  .dtable{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  .dtable th,.dtable td{border:1px solid var(--line);padding:7px 8px;text-align:center}
+  .dtable th{background:var(--panel2);color:var(--muted);font-weight:600}
+  .dtable tbody tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+  .dtable .empty td{color:var(--muted);padding:18px;font-style:italic}
+  .concl{margin-top:12px;padding:12px 14px;border-left:3px solid var(--accent2);background:#0a1713;border-radius:0 10px 10px 0;font-size:13px;line-height:1.8}
+  .concl b{color:#fff}
+  .exam{background:linear-gradient(180deg,#1c1726,#181421);border-color:#3a2f4e}
+  .exam .q{font-size:14px;line-height:1.8}
+  .exam .opts{margin:10px 0 0;display:flex;flex-direction:column;gap:8px}
+  .opt{padding:9px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:13.5px;transition:.15s;background:#13192a}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{background:rgba(52,211,153,.14);border-color:var(--good);color:#d1fae5}
+  .opt.wrong{background:rgba(248,113,113,.14);border-color:var(--bad);color:#fecaca}
+  .explain{margin-top:12px;padding:12px 14px;border-left:3px solid var(--accent2);background:#0a1713;border-radius:0 10px 10px 0;font-size:13px;line-height:1.8;display:none}
+  .explain.show{display:block}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+  .tile:hover{transform:translateY(-3px);border-color:var(--accent)}
+  .tile .em{font-size:26px}
+  .tile h4{margin:10px 0 4px;font-size:15px}
+  .tile p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .tile .pill{position:absolute;top:12px;right:12px;font-size:10px;padding:2px 8px;border-radius:999px;background:var(--panel2);color:var(--muted)}
+  .hidden{display:none}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:6px}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .swatch{width:14px;height:10px;border-radius:3px;display:inline-block}
+  .badge{font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(34,195,154,.16);color:#a7f3d6;border:1px solid rgba(34,195,154,.3)}
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:30px;line-height:1.7}
+  .kvs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .kv{background:#0a1713;border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center}
+  .kv .v{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+  .kv .k{font-size:11px;color:var(--muted);margin-top:2px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .chip{font-size:12px;padding:4px 10px;border-radius:999px;background:#0a1713;border:1px solid var(--line);color:#d4ece1}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">🧪</div>
+      <div><h1>化学虚拟实验室</h1><p>真装置 · 真现象 · 真实验题</p></div>
+    </div>
+    <div class="navgroup"><div class="navitem active" data-go="home"><span class="ic">🏠</span>首页 · 总览</div></div>
+    <div class="navgroup">
+      <div class="label"><span class="dot" style="background:var(--gas)"></span>身边的物质 · 气体</div>
+      <div class="navitem" data-go="o2"><span class="ic">🅞</span>氧气的制取与收集<span class="badge" style="margin-left:auto">必考</span></div>
+      <div class="navitem" data-go="co2"><span class="ic">💨</span>二氧化碳制取与性质<span class="badge" style="margin-left:auto">必考</span></div>
+    </div>
+    <div class="navgroup">
+      <div class="label"><span class="dot" style="background:var(--inquiry)"></span>科学探究</div>
+      <div class="navitem" data-go="burn"><span class="ic">🔥</span>燃烧的条件</div>
+      <div class="navitem" data-go="mass"><span class="ic">⚖️</span>质量守恒定律</div>
+      <div class="navitem" data-go="water"><span class="ic">💧</span>电解水 · 水的组成</div>
+    </div>
+    <div class="navgroup">
+      <div class="label"><span class="dot" style="background:var(--acid)"></span>酸 碱 盐</div>
+      <div class="navitem" data-go="ph"><span class="ic">🧫</span>酸碱中和 · pH与指示剂</div>
+      <div class="navitem" data-go="metal"><span class="ic">🔩</span>金属活动性顺序</div>
+    </div>
+    <div class="navgroup">
+      <div class="label"><span class="dot" style="background:var(--solution)"></span>溶液 · 分离</div>
+      <div class="navitem" data-go="solution"><span class="ic">🥤</span>配制溶质质量分数溶液</div>
+      <div class="navitem" data-go="salt"><span class="ic">🧂</span>粗盐提纯 · 过滤蒸发</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+  <!-- ===== HOME ===== -->
+  <section id="home" class="page">
+    <div class="pagehead">
+      <span class="tag">人教版 · 九年级 · 中考实验题</span>
+      <h2>👋 这是一个"化学虚拟实验室"，不是动画片</h2>
+      <p>这里复刻真实的化学实验：你要<b style="color:#fff">自己选装置、控制变量、观察颜色与气泡、读天平和量筒、把现象和数据记下来、再用证据下结论</b>——和中考实验探究题的考法完全一致。先动手做，再做题，印象最深。</p>
+    </div>
+    <div class="card"><h3><span class="bar"></span>选一个实验进实验室</h3><div class="grid" id="homeGrid"></div></div>
+    <div class="card concept">
+      <h3><span class="bar"></span>化学实验探究的"五步法"（每个实验都按这个走）</h3>
+      <ol>
+        <li><b style="color:#fff">提出问题 / 明确目的</b>：要制什么、验证什么、探究哪个因素？</li>
+        <li><b style="color:#fff">设计实验</b>：选发生/收集装置，用<span class="key">控制变量法</span>，想好对照组。</li>
+        <li><b style="color:#fff">动手操作</b>：加药品、加热、滴加、过滤……注意操作顺序和安全。</li>
+        <li><b style="color:#fff">观察记录</b>：颜色、气泡、沉淀、温度、读数都要<span class="key">如实记录</span>。</li>
+        <li><b style="color:#fff">分析结论</b>：用现象/数据作证据下结论，并做<span class="key">误差与评价分析</span>。</li>
+      </ol>
+    </div>
+    <div class="card concept">
+      <h3><span class="bar"></span>背景说明</h3>
+      <p style="margin:0;color:#d4ece1;font-size:13.5px;line-height:1.9">面向 2031 合肥/安徽中考，人教版九年级化学。这里挑的都是<b style="color:#fff">中考实验探究高频考点</b>：气体制取、燃烧条件、质量守恒、电解水、酸碱中和、金属活动性、溶液配制、粗盐提纯。模拟器里的数值和现象按真实化学规律计算，可放心拿来理解原理、对照真题。</p>
+    </div>
+  </section>
+
+  <!-- ===== O2 制取 ===== -->
+  <section id="o2" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--gas)">身边的物质 · 中考必考实验⭐⭐⭐⭐⭐</span>
+      <h2>🅞 氧气的实验室制取与收集</h2>
+      <p>初中第一个"气体制取"实验。要学会<b style="color:#fff">根据反应物状态和条件选发生装置</b>、<b style="color:#fff">根据气体性质选收集方法</b>，并掌握验满、检验、注意事项——这些都是中考实验题的固定考点。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>三个常见反应（写对化学方程式）</h3>
+        <ul>
+          <li>加热高锰酸钾：<span class="formula">2KMnO₄ →(Δ) K₂MnO₄ + MnO₂ + O₂↑</span>（固+固，加热型）</li>
+          <li>双氧水+二氧化锰：<span class="formula">2H₂O₂ →(MnO₂) 2H₂O + O₂↑</span>（固+液，常温型，MnO₂是<span class="key">催化剂</span>）</li>
+          <li>加热氯酸钾：<span class="formula">2KClO₃ →(MnO₂,Δ) 2KCl + 3O₂↑</span>（固+固，加热型）</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>装置选择口诀</h3>
+        <ul>
+          <li><b style="color:#fff">发生装置看状态和条件</b>：固固加热 → 试管+酒精灯；固液常温 → 锥形瓶+分液漏斗。</li>
+          <li><b style="color:#fff">收集装置看溶解性和密度</b>：O₂不易溶于水 → <span class="key">排水法</span>(更纯)；O₂密度比空气大 → <span class="key">向上排空气法</span>。</li>
+          <li>检验O₂：带火星的木条伸入，<span class="key">复燃</span>。</li>
+          <li>验满：排空气法把带火星木条放<span class="key">瓶口</span>复燃即满；排水法看气泡从瓶口往外冒。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini" id="o2Mini">选装置 → 点开始 → 收集满 → 验满/检验</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="o2Cv" width="760" height="440"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>① 选药品 / 反应</label>
+            <div class="seg col" id="o2Rxn">
+              <button class="on" data-r="kmno4">高锰酸钾（加热）</button>
+              <button data-r="h2o2">双氧水 + MnO₂（常温）</button>
+              <button data-r="kclo3">氯酸钾 + MnO₂（加热）</button>
+            </div>
+          </div>
+          <div class="ctrl">
+            <label>② 选发生装置</label>
+            <div class="seg" id="o2Gen"><button class="on" data-g="heat">试管+酒精灯</button><button data-g="flask">锥形瓶+漏斗</button></div>
+          </div>
+          <div class="ctrl">
+            <label>③ 选收集方法</label>
+            <div class="seg" id="o2Col"><button class="on" data-c="water">排水法</button><button data-c="air">向上排空气法</button></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="o2Run">▶ 开始制取</button>
+            <button class="btn ghost" id="o2Reset">重置</button>
+          </div>
+          <div class="toolbar">
+            <button class="btn" id="o2Check">🔥 带火星木条检验/验满</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="o2Fill" style="color:var(--accent2)">0%</div><div class="k">集气瓶充满</div></div>
+            <div class="kv"><div class="v" id="o2Pure" style="color:var(--warn);font-size:14px">—</div><div class="k">气体纯度</div></div>
+          </div>
+          <div class="status good" id="o2Tip"></div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:#38bdf8"></i>水</span>
+        <span><i class="swatch" style="background:rgba(123,227,192,.5)"></i>收集到的 O₂</span>
+        <span><i class="swatch" style="background:#fbbf24"></i>气泡/火焰</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CO2 制取与性质 ===== -->
+  <section id="co2" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--gas)">身边的物质 · 中考必考实验⭐⭐⭐⭐⭐</span>
+      <h2>💨 二氧化碳的实验室制取与性质</h2>
+      <p>药品选择是重点考点：为什么用<b style="color:#fff">大理石(石灰石)和稀盐酸</b>，不用稀硫酸、不用浓盐酸、不用碳酸钠？再加上检验、验满和"<b style="color:#fff">倾倒灭蜡烛</b>"这个经典性质实验。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>反应原理与药品选择</h3>
+        <ul>
+          <li>原理：<span class="formula">CaCO₃ + 2HCl = CaCl₂ + H₂O + CO₂↑</span>（固+液，常温）。</li>
+          <li>❌ 不用<b style="color:#fff">稀硫酸</b>：生成微溶的 CaSO₄ 覆盖在石灰石表面，<span class="key">阻止反应继续</span>。</li>
+          <li>❌ 不用<b style="color:#fff">浓盐酸</b>：易挥发，使收集的 CO₂ <span class="key">混有 HCl 气体不纯</span>。</li>
+          <li>❌ 不用<b style="color:#fff">碳酸钠粉末</b>：反应太快，不便控制。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>收集 · 检验 · 验满 · 性质</h3>
+        <ul>
+          <li>只能<span class="key">向上排空气法</span>：CO₂能溶于水且与水反应，密度比空气大。<b style="color:#fff">不能排水法</b>。</li>
+          <li>检验：通入<b style="color:#fff">澄清石灰水</b>变浑浊 <span class="formula">CO₂+Ca(OH)₂=CaCO₃↓+H₂O</span>。</li>
+          <li>验满：把<span class="key">燃着的木条</span>放瓶口，熄灭即满。</li>
+          <li>性质：不燃烧、不支持燃烧、密度比空气大 → 倾倒时<b style="color:#fff">下层蜡烛先灭</b>。与水反应 <span class="formula">CO₂+H₂O=H₂CO₃</span> 使紫色石蕊变红。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini">切换"制取检验"与"倾倒灭蜡烛"两个场景</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="co2Cv" width="760" height="430"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>实验场景</label>
+            <div class="seg" id="co2Mode"><button class="on" data-m="make">制取·检验·验满</button><button data-m="candle">倾倒灭蜡烛</button></div>
+          </div>
+          <div id="co2MakeBox">
+            <div class="ctrl">
+              <label>选酸</label>
+              <div class="seg col" id="co2Acid">
+                <button class="on" data-a="hcl">稀盐酸（正确）</button>
+                <button data-a="h2so4">稀硫酸</button>
+                <button data-a="conc">浓盐酸</button>
+              </div>
+            </div>
+            <div class="toolbar">
+              <button class="btn primary" id="co2Run">▶ 开始制取</button>
+              <button class="btn ghost" id="co2Reset">重置</button>
+            </div>
+            <div class="toolbar">
+              <button class="btn" id="co2Lime">🧪 通入澄清石灰水(检验)</button>
+              <button class="btn" id="co2Full">🔥 燃着木条验满</button>
+            </div>
+            <div class="kvs">
+              <div class="kv"><div class="v" id="co2Fill" style="color:var(--accent2)">0%</div><div class="k">集气瓶充满</div></div>
+              <div class="kv"><div class="v" id="co2Pure" style="color:var(--warn);font-size:14px">—</div><div class="k">气体纯度</div></div>
+            </div>
+          </div>
+          <div id="co2CandleBox" style="display:none">
+            <div class="status warn" style="margin-bottom:4px">烧杯里有上下两层燃着的蜡烛。沿杯壁慢慢倒入 CO₂，注意先后熄灭顺序。</div>
+            <div class="toolbar">
+              <button class="btn primary" id="co2Pour">⤵ 倾倒二氧化碳</button>
+              <button class="btn ghost" id="co2PourReset">重新点燃</button>
+            </div>
+          </div>
+          <div class="status good" id="co2Tip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 燃烧的条件 ===== -->
+  <section id="burn" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--inquiry)">科学探究 · 中考实验⭐⭐⭐⭐</span>
+      <h2>🔥 探究燃烧的条件</h2>
+      <p>燃烧需要<b style="color:#fff">三个条件同时满足</b>。这个经典的"白磷红磷"实验用<b style="color:#fff">控制变量法</b>，一次只改变一个因素，分别证明缺哪个条件就烧不起来。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>燃烧的三个条件（缺一不可）</h3>
+        <ul>
+          <li>① 有<span class="key">可燃物</span>；</li>
+          <li>② 可燃物与<span class="key">氧气(空气)</span>接触；</li>
+          <li>③ 温度达到可燃物的<span class="key">着火点</span>。</li>
+          <li>白磷着火点约 <b style="color:#fff">40℃</b>，红磷约 <b style="color:#fff">240℃</b>。热水(约80℃)能点着白磷，点不着红磷。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>三处对照说明什么</h3>
+        <ul>
+          <li>铜片白磷 vs 铜片红磷：都接触O₂、温度相同 → 只差<span class="key">着火点</span>。白磷燃、红磷不燃 → 证明要<b style="color:#fff">达到着火点</b>。</li>
+          <li>铜片白磷 vs 水中白磷：都是白磷、温度都够 → 只差<span class="key">是否接触O₂</span>。水中白磷不燃 → 证明要<b style="color:#fff">接触氧气</b>。</li>
+          <li>给水中白磷通O₂ → 立刻"水下燃烧" → 反证接触O₂的重要性。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟实验台<span class="mini">倒热水加温 → 观察三处 → 再给水中白磷通氧气</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="burnCv" width="760" height="400"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>水温（着火点参考：白磷40℃/红磷240℃）<b><span id="burnTv">20</span> ℃</b></label>
+            <input type="range" id="burnT" min="20" max="90" step="1" value="20"></div>
+          <div class="toolbar">
+            <button class="btn primary" id="burnHot">🔥 倒入80℃热水</button>
+            <button class="btn ghost" id="burnReset">重置</button>
+          </div>
+          <div class="toolbar">
+            <button class="btn" id="burnO2">🅞 向水中白磷通氧气</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="burnWP" style="font-size:13px;color:var(--accent2)">未燃</div><div class="k">铜片·白磷</div></div>
+            <div class="kv"><div class="v" id="burnRP" style="font-size:13px;color:var(--warn)">未燃</div><div class="k">铜片·红磷</div></div>
+            <div class="kv"><div class="v" id="burnUW" style="font-size:13px;color:var(--gas)">未燃</div><div class="k">水中·白磷</div></div>
+            <div class="kv"><div class="v" id="burnTemp" style="font-size:16px">20℃</div><div class="k">当前温度</div></div>
+          </div>
+          <div class="status warn" id="burnTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 质量守恒定律 ===== -->
+  <section id="mass" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--inquiry)">科学探究 · 中考必考⭐⭐⭐⭐⭐</span>
+      <h2>⚖️ 探究质量守恒定律</h2>
+      <p>参加化学反应的各物质<b style="color:#fff">质量总和</b>，等于反应后生成各物质质量总和。难点是：为什么有的反应在敞口天平上"看起来变轻/变重"？关键看<b style="color:#fff">有没有气体进出</b>。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>定律 & 微观本质</h3>
+        <ul>
+          <li>质量守恒：<span class="formula">m(反应物) = m(生成物)</span>，<b style="color:#fff">一切化学反应都遵守</b>。</li>
+          <li>微观原因：反应前后<span class="key">原子的种类、数目、质量都不变</span>，只是重新组合。</li>
+          <li>"五个不变"：元素种类、原子种类/数目、各原子质量、总质量；"两个一定变"：分子种类、物质种类。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>为什么天平会"变"</h3>
+        <ul>
+          <li>有气体<span class="key">生成并逸出</span>（如 Na₂CO₃+盐酸）→ 敞口天平<b style="color:#fff">变小</b>。</li>
+          <li>有气体<span class="key">参加反应（吸收空气）</span>（如镁燃烧）→ 敞口固体<b style="color:#fff">变大</b>。</li>
+          <li>要验证守恒，凡涉及气体的反应必须在<span class="key">密闭装置</span>里称量。守恒定律本身从没被破坏。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟天平台<span class="mini">选反应 + 选装置，点反应看天平示数变不变</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="massCv" width="760" height="400"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>选反应</label>
+            <div class="seg col" id="massRxn">
+              <button class="on" data-r="na2co3">碳酸钠 + 稀盐酸（放出CO₂）</button>
+              <button data-r="mg">镁条燃烧（吸收O₂）</button>
+              <button data-r="p">白磷燃烧（消耗瓶内O₂）</button>
+              <button data-r="fe">铁钉 + 硫酸铜溶液（无气体）</button>
+            </div>
+          </div>
+          <div class="ctrl">
+            <label>装置</label>
+            <div class="seg" id="massSeal"><button class="on" data-s="1">密闭(带气球)</button><button data-s="0">敞口</button></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="massRun">▶ 开始反应</button>
+            <button class="btn ghost" id="massReset">重置</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="massBefore" style="color:#fff">120.0</div><div class="k">反应前 (g)</div></div>
+            <div class="kv"><div class="v" id="massAfter" style="color:var(--accent2)">120.0</div><div class="k">天平示数 (g)</div></div>
+          </div>
+          <div class="status good" id="massTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 电解水 ===== -->
+  <section id="water" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--inquiry)">科学探究 · 中考⭐⭐⭐⭐</span>
+      <h2>💧 电解水 · 探究水的组成</h2>
+      <p>给水通直流电，水会分解成两种气体。通过<b style="color:#fff">检验两极气体、比较体积</b>，证明水是由<b style="color:#fff">氢、氧两种元素</b>组成的。记住八字口诀：<b style="color:#fff">"正氧负氢、氢二氧一"</b>。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>原理 & 现象</h3>
+        <ul>
+          <li>反应：<span class="formula">2H₂O →(通电) 2H₂↑ + O₂↑</span>。</li>
+          <li><b style="color:#fff">负极</b>产生<span class="key">氢气H₂</span>，<b style="color:#fff">正极</b>产生<span class="key">氧气O₂</span>。</li>
+          <li>体积比 <span class="formula">V(H₂) : V(O₂) = 2 : 1</span>（负极气体多，是正极的2倍）。</li>
+          <li>常加少量稀硫酸或NaOH，<span class="key">增强水的导电性</span>，加快分解。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>验气 & 结论</h3>
+        <ul>
+          <li>正极O₂：带火星木条伸入 → <b style="color:#fff">复燃</b>。</li>
+          <li>负极H₂：移近火焰 → <b style="color:#fff">淡蓝色火焰</b>(纯度不够会"噗"地爆鸣)。</li>
+          <li>结论：水是由<span class="key">氢元素和氧元素组成</span>的化合物。</li>
+          <li>微观：化学变化中<span class="key">分子可分、原子不可分</span>（水分子分成氢、氧原子再重组）。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟电解器<span class="mini">接通电源看两管气体；满了点验气</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="watCv" width="760" height="420"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>电源开关</label>
+            <div class="seg" id="watSw"><button data-s="off">断开</button><button class="on" data-s="on">接通直流电</button></div>
+          </div>
+          <div class="ctrl"><label>通电速率<b><span id="watRv">中</span></b></label><input type="range" id="watR" min="1" max="3" step="1" value="2"></div>
+          <div class="toolbar">
+            <button class="btn" id="watTestH">🔥 检验负极气体</button>
+            <button class="btn" id="watTestO">🔥 检验正极气体</button>
+          </div>
+          <div class="toolbar"><button class="btn ghost" id="watReset">重置</button></div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="watVH" style="color:var(--accent2)">0.0</div><div class="k">负极 V(H₂)/mL</div></div>
+            <div class="kv"><div class="v" id="watVO" style="color:var(--warn)">0.0</div><div class="k">正极 V(O₂)/mL</div></div>
+            <div class="kv"><div class="v" id="watRatio" style="color:#fff">—</div><div class="k">H₂ : O₂</div></div>
+            <div class="kv"><div class="v" id="watState" style="font-size:13px">未通电</div><div class="k">状态</div></div>
+          </div>
+          <div class="status good" id="watTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 酸碱中和 pH ===== -->
+  <section id="ph" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--acid)">酸碱盐 · 中考必考实验⭐⭐⭐⭐⭐</span>
+      <h2>🧫 酸碱中和反应 · pH与指示剂</h2>
+      <p>向滴有<b style="color:#fff">酚酞的NaOH溶液</b>里逐滴加盐酸，看着红色慢慢褪去——<b style="color:#fff">恰好变无色</b>时酸碱中和完全。同时用 pH 监测整个过程，理解指示剂变色和 pH 曲线。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>中和反应 & 指示剂</h3>
+        <ul>
+          <li>中和反应：酸+碱→盐+水，<span class="formula">NaOH + HCl = NaCl + H₂O</span>，<span class="key">放热</span>。</li>
+          <li>紫色<b style="color:#fff">石蕊</b>：遇酸变<span style="color:#f87171">红</span>、遇碱变<span style="color:#5b8cff">蓝</span>、中性紫色。</li>
+          <li>无色<b style="color:#fff">酚酞</b>：遇碱变<span style="color:#f87171">红</span>、中性和酸性都<b style="color:#fff">无色</b>。</li>
+          <li>判断恰好完全：滴入酸使酚酞红色<span class="key">刚好褪为无色</span>。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>pH 的意义</h3>
+        <ul>
+          <li><span class="formula">pH&lt;7 酸性</span>，<span class="formula">pH=7 中性</span>，<span class="formula">pH&gt;7 碱性</span>。</li>
+          <li>pH 越小酸性越强，pH 越大碱性越强。</li>
+          <li>测 pH：用玻璃棒蘸取待测液滴在 pH 试纸上，与标准比色卡对照（不能把试纸直接伸进溶液）。</li>
+          <li>本实验滴入盐酸时 pH 从大变小，在<span class="key">恰好中和处(pH=7)附近会突变</span>。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟滴定台<span class="mini">瓶里：20mL 0.1mol/L NaOH；滴定管：0.1mol/L HCl</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="phCv" width="760" height="430"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>指示剂</label>
+            <div class="seg" id="phInd"><button class="on" data-i="ph">酚酞</button><button data-i="lit">石蕊</button><button data-i="none">不加</button></div>
+          </div>
+          <div class="ctrl"><label>已滴入盐酸体积 V<b><span id="phVv">0</span> mL</b></label>
+            <input type="range" id="phV" min="0" max="40" step="0.5" value="0"></div>
+          <div class="toolbar">
+            <button class="btn" id="phEq">🎯 滴到恰好中和(pH=7)</button>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="phRec">＋ 记录这点</button>
+            <button class="btn ghost" id="phClr">清空</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="phPH" style="color:var(--accent2)">13.0</div><div class="k">pH</div></div>
+            <div class="kv"><div class="v" id="phAcid" style="font-size:14px;color:var(--warn)">碱性</div><div class="k">酸碱性</div></div>
+          </div>
+          <div class="status good" id="phTip"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="twocol">
+      <div class="card">
+        <h3><span class="bar"></span>数据记录表</h3>
+        <table class="dtable"><thead>
+          <tr><th>次</th><th>V(HCl)/mL</th><th>pH</th><th>酸碱性</th><th>溶液颜色</th></tr>
+        </thead><tbody id="phTbody"></tbody></table>
+        <div class="concl" id="phConcl">在不同体积处点"记录这点"，对照右边曲线，注意 20mL 附近 pH 的突变。</div>
+      </div>
+      <div class="card">
+        <h3><span class="bar"></span>pH 曲线（随加入盐酸变化）</h3>
+        <div class="canvas-wrap"><canvas id="phGraph" width="760" height="320"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 金属活动性 ===== -->
+  <section id="metal" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--acid)">酸碱盐 · 中考必考实验⭐⭐⭐⭐⭐</span>
+      <h2>🔩 探究金属活动性顺序</h2>
+      <p>把不同金属放进稀盐酸、硫酸铜溶液、硝酸银溶液里，比较<b style="color:#fff">反应快慢、能否置换</b>，就能排出金属的活动性强弱顺序。这是中考"金属"主题的核心实验。</p>
+    </div>
+
+    <div class="card concept">
+      <h3><span class="bar"></span>金属活动性顺序表（要背）</h3>
+      <div class="pillrow">
+        <span class="chip" style="border-color:#f87171;color:#fca5a5">K 钾</span><span class="chip">Ca 钙</span><span class="chip">Na 钠</span>
+        <span class="chip" style="border-color:var(--accent);color:var(--accent2)">Mg 镁</span><span class="chip" style="border-color:var(--accent);color:var(--accent2)">Al 铝</span>
+        <span class="chip" style="border-color:var(--accent);color:var(--accent2)">Zn 锌</span><span class="chip" style="border-color:var(--accent);color:var(--accent2)">Fe 铁</span>
+        <span class="chip">Sn 锡</span><span class="chip">Pb 铅</span><span class="chip" style="border-color:#fbbf24;color:#fbbf24">(H 氢)</span>
+        <span class="chip" style="border-color:#a78bfa;color:#c4b5fd">Cu 铜</span><span class="chip">Hg 汞</span><span class="chip">Ag 银</span><span class="chip">Pt 铂</span><span class="chip">Au 金</span>
+      </div>
+      <ul style="margin-top:10px">
+        <li>口诀：<b style="color:#fff">钾钙钠镁铝，锌铁锡铅(氢)，铜汞银铂金</b>。越靠前越活泼。</li>
+        <li>排在 <b style="color:#fff">H 前面</b>的金属能与稀盐酸/稀硫酸反应放出 <span class="key">H₂</span>；H 后面的(Cu、Ag)不能。</li>
+        <li>前面的金属能把后面的金属从其<b style="color:#fff">盐溶液</b>中<span class="key">置换</span>出来。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟试管台<span class="mini">选金属+选溶液，放入观察现象</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="metCv" width="760" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>选金属</label>
+            <div class="seg" id="metM"><button data-m="Mg">镁Mg</button><button class="on" data-m="Zn">锌Zn</button><button data-m="Fe">铁Fe</button><button data-m="Cu">铜Cu</button></div>
+          </div>
+          <div class="ctrl"><label>选溶液</label>
+            <div class="seg col" id="metS">
+              <button class="on" data-s="hcl">稀盐酸 HCl</button>
+              <button data-s="cuso4">硫酸铜溶液 CuSO₄(蓝)</button>
+              <button data-s="agno3">硝酸银溶液 AgNO₃(无色)</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="metRun">▶ 放入金属</button>
+            <button class="btn ghost" id="metReset">取出/重置</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="metReact" style="font-size:14px;color:var(--accent2)">—</div><div class="k">是否反应</div></div>
+            <div class="kv"><div class="v" id="metRate" style="font-size:14px;color:var(--warn)">—</div><div class="k">剧烈程度</div></div>
+          </div>
+          <div class="status good" id="metTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 配制溶液 ===== -->
+  <section id="solution" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--solution)">溶液 · 中考实验⭐⭐⭐⭐</span>
+      <h2>🥤 配制一定溶质质量分数的溶液</h2>
+      <p>四步走：<b style="color:#fff">计算 → 称量 → 量取 → 溶解</b>。重点是会算溶质和水各多少，以及分析<b style="color:#fff">哪些操作会让浓度偏大或偏小</b>（误差分析是中考高频）。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>计算公式 & 步骤</h3>
+        <ul>
+          <li>溶质质量分数 <span class="formula">= 溶质质量 ÷ 溶液质量 ×100%</span>。</li>
+          <li>溶质质量 = 溶液质量 × 质量分数；溶剂(水)质量 = 溶液质量 − 溶质质量。</li>
+          <li>水的体积 = 水的质量 ÷ 密度(1g/mL)，用<span class="key">量筒</span>量取。</li>
+          <li>仪器：托盘天平、药匙、量筒、胶头滴管、烧杯、玻璃棒。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>误差分析（会偏大/偏小？）</h3>
+        <ul>
+          <li>量水时<b style="color:#fff">仰视</b>读数 → 实际水<span class="key">偏多</span> → 浓度<span class="key">偏小</span>。</li>
+          <li>量水时<b style="color:#fff">俯视</b>读数 → 实际水<span class="key">偏少</span> → 浓度<span class="key">偏大</span>。</li>
+          <li>砝码与药品<b style="color:#fff">放反</b>(且动了游码) → 药品偏少 → 浓度偏小。</li>
+          <li>药品撒落、烧杯内壁有水 → 浓度偏小。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟配制台<span class="mini">设定目标 → 选量取视角 → 演示并对比实际浓度</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="solCv" width="760" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>目标溶液质量<b><span id="solMv">50</span> g</b></label><input type="range" id="solM" min="20" max="100" step="5" value="50"></div>
+          <div class="ctrl"><label>目标溶质质量分数<b><span id="solWv">6</span> %</b></label><input type="range" id="solW" min="2" max="20" step="1" value="6"></div>
+          <div class="ctrl"><label>量取水的视角</label>
+            <div class="seg" id="solEye"><button class="on" data-e="ok">平视(正确)</button><button data-e="up">仰视</button><button data-e="down">俯视</button></div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="solRun">▶ 演示配制</button>
+            <button class="btn ghost" id="solReset">重置</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="solNaCl" style="color:var(--accent2)">3.0</div><div class="k">需NaCl /g</div></div>
+            <div class="kv"><div class="v" id="solWater" style="color:var(--gas)">47</div><div class="k">需水 /mL</div></div>
+            <div class="kv"><div class="v" id="solActual" style="color:var(--warn)">6.0</div><div class="k">实际质量分数 %</div></div>
+            <div class="kv"><div class="v" id="solErr" style="font-size:13px">准确</div><div class="k">偏差</div></div>
+          </div>
+          <div class="status good" id="solTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 粗盐提纯 ===== -->
+  <section id="salt" class="page hidden">
+    <div class="pagehead">
+      <span class="tag" style="color:var(--sep)">溶液·分离 · 中考实验⭐⭐⭐⭐</span>
+      <h2>🧂 粗盐提纯 · 过滤与蒸发</h2>
+      <p>把混有泥沙的粗盐变成精盐：<b style="color:#fff">溶解 → 过滤 → 蒸发结晶</b>。过滤的"<b style="color:#fff">一贴二低三靠</b>"和蒸发的"<b style="color:#fff">何时停止加热</b>"是中考必考操作细节。</p>
+    </div>
+
+    <div class="twocol">
+      <div class="card concept">
+        <h3><span class="bar"></span>三步操作 & 仪器</h3>
+        <ul>
+          <li><b style="color:#fff">溶解</b>：粗盐入水，用<span class="key">玻璃棒搅拌</span>加速溶解（泥沙不溶）。</li>
+          <li><b style="color:#fff">过滤</b>：分离不溶性杂质（泥沙留在滤纸上，食盐随水通过）。</li>
+          <li><b style="color:#fff">蒸发</b>：蒸发皿加热，玻璃棒搅拌，析出 NaCl 晶体。</li>
+          <li>仪器：烧杯、玻璃棒、漏斗、滤纸、铁架台、蒸发皿、酒精灯。</li>
+        </ul>
+      </div>
+      <div class="card concept">
+        <h3><span class="bar"></span>关键操作细节</h3>
+        <ul>
+          <li>过滤"<span class="key">一贴</span>"：滤纸紧贴漏斗内壁；"<span class="key">二低</span>"：滤纸边缘低于漏斗口、液面低于滤纸边缘；"<span class="key">三靠</span>"：烧杯靠玻璃棒、玻璃棒靠三层滤纸、漏斗下端靠烧杯内壁。</li>
+          <li>玻璃棒作用：溶解时搅拌、过滤时<span class="key">引流</span>、蒸发时搅拌防飞溅。</li>
+          <li>蒸发：当出现<span class="key">较多固体</span>时就停止加热，用余热蒸干（防止飞溅）。</li>
+          <li>滤液仍浑浊原因：滤纸破损/液面高于滤纸边缘/仪器不干净 → 需<b style="color:#fff">重新过滤</b>。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="bar"></span>虚拟提纯台<span class="mini">点"下一步"依次演示溶解→过滤→蒸发</span></h3>
+      <div class="sim">
+        <div class="canvas-wrap"><canvas id="saltCv" width="760" height="400"></canvas></div>
+        <div class="controls">
+          <div class="ctrl"><label>过滤操作</label>
+            <div class="seg col" id="saltOp">
+              <button class="on" data-o="ok">规范操作</button>
+              <button data-o="break">滤纸破损</button>
+              <button data-o="high">液面高于滤纸</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" id="saltNext">▶ 下一步</button>
+            <button class="btn ghost" id="saltReset">重置</button>
+          </div>
+          <div class="kvs">
+            <div class="kv"><div class="v" id="saltStep" style="font-size:14px;color:var(--accent2)">溶解</div><div class="k">当前步骤</div></div>
+            <div class="kv"><div class="v" id="saltYield" style="color:var(--warn)">—</div><div class="k">精盐产率</div></div>
+          </div>
+          <div class="status good" id="saltTip"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer>
+    初中化学虚拟实验室 · 为小布而做 · 单文件零安装，双击即开<br>
+    想加实验/改功能，让 AI 改 chemistry-lab.html 即可。
+  </footer>
+  </main>
+</div>
+
+<script>
+/* ============ 导航 & 通用 ============ */
+const pages=document.querySelectorAll('.page'),navitems=document.querySelectorAll('.navitem');
+const animators={},redraws={};let activeAnimId=null;
+function show(id){
+  pages.forEach(p=>p.classList.toggle('hidden',p.id!==id));
+  navitems.forEach(n=>n.classList.toggle('active',n.dataset.go===id));
+  activeAnimId=id; if(redraws[id])redraws[id](); window.scrollTo({top:0,behavior:'smooth'});
+}
+navitems.forEach(n=>n.addEventListener('click',()=>show(n.dataset.go)));
+
+const homeData=[
+  {id:'o2',em:'🅞',t:'氧气的制取与收集',d:'选装置·排水法/排空气法·验满验纯',p:'气·必考'},
+  {id:'co2',em:'💨',t:'二氧化碳制取与性质',d:'大理石+稀盐酸·检验·灭蜡烛·石灰水',p:'气·必考'},
+  {id:'burn',em:'🔥',t:'燃烧的条件',d:'白磷红磷对照·控制变量·三要素',p:'探究'},
+  {id:'mass',em:'⚖️',t:'质量守恒定律',d:'密闭/敞口对比·天平读数·微观解释',p:'探究·必考'},
+  {id:'water',em:'💧',t:'电解水·水的组成',d:'正氧负氢·体积比1:2·验气',p:'探究'},
+  {id:'ph',em:'🧫',t:'酸碱中和·pH与指示剂',d:'滴定·指示剂变色·pH曲线·数据表',p:'酸碱·必考'},
+  {id:'metal',em:'🔩',t:'金属活动性顺序',d:'金属插酸/盐溶液·现象排序',p:'酸碱·必考'},
+  {id:'solution',em:'🥤',t:'配制溶质质量分数溶液',d:'计算·称量·量取·溶解·误差分析',p:'溶液'},
+  {id:'salt',em:'🧂',t:'粗盐提纯·过滤蒸发',d:'溶解→过滤→蒸发·产率计算',p:'分离'},
+];
+const homeGrid=document.getElementById('homeGrid');
+homeData.forEach(c=>{const el=document.createElement('div');el.className='tile';
+  el.innerHTML=`<span class="pill">${c.p}</span><div class="em">${c.em}</div><h4>${c.t}</h4><p>${c.d}</p>`;
+  el.addEventListener('click',()=>show(c.id));homeGrid.appendChild(el);});
+
+document.querySelectorAll('.opts').forEach(opts=>{const ans=opts.dataset.answer;
+  opts.querySelectorAll('.opt').forEach(opt=>opt.addEventListener('click',()=>{
+    opts.querySelectorAll('.opt').forEach(o=>o.classList.remove('correct','wrong'));
+    if(opt.dataset.k===ans)opt.classList.add('correct');
+    else{opt.classList.add('wrong');opts.querySelector(`[data-k="${ans}"]`).classList.add('correct');}
+  }));});
+document.querySelectorAll('[data-explain]').forEach(b=>b.addEventListener('click',()=>{
+  const ex=b.nextElementSibling;ex.classList.toggle('show');
+  b.textContent=ex.classList.contains('show')?'收起解析':'查看解析';}));
+
+let t0=performance.now();
+function loop(now){const t=(now-t0)/1000;if(activeAnimId&&animators[activeAnimId])animators[activeAnimId](t);requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+
+/* ============ 通用工具 ============ */
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function lerp(a,b,t){return a+(b-a)*t;}
+function roundTo(v,step){return Math.round(v/step)*step;}
+function trimNum(v){return (Math.round(v*100)/100).toString();}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function renderTable(tbody,rows,cols,emptyMsg){
+  tbody.innerHTML='';
+  if(!rows.length){tbody.innerHTML=`<tr class="empty"><td colspan="${cols}">${emptyMsg}</td></tr>`;return;}
+  rows.forEach((r,i)=>{const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+(i+1)+'</td>'+r.map(c=>`<td>${c}</td>`).join('');tbody.appendChild(tr);});
+}
+/* 气泡：在给定矩形区域内上升的小气泡 */
+function makeBubbles(n){const arr=[];for(let i=0;i<n;i++)arr.push({x:Math.random(),y:Math.random(),r:1+Math.random()*2.5,sp:.3+Math.random()*.7});return arr;}
+function drawBubbles(ctx,bubbles,x,y,w,h,t,rate,color){
+  if(rate<=0)return;ctx.save();ctx.fillStyle=color||'rgba(255,255,255,.55)';
+  bubbles.forEach(b=>{const yy=h*((1-((b.y - t*b.sp*rate)%1+1)%1));ctx.globalAlpha=.35+.5*(1-yy/h);
+    ctx.beginPath();ctx.arc(x+b.x*w, y+yy, b.r,0,7);ctx.fill();});
+  ctx.globalAlpha=1;ctx.restore();
+}
+/* 简单火焰 */
+function drawFlame(ctx,cx,by,scale,t){
+  ctx.save();const fl=1+0.12*Math.sin(t*12);
+  const g=ctx.createRadialGradient(cx,by-18*scale*fl,2,cx,by-14*scale,22*scale);
+  g.addColorStop(0,'#fff7d6');g.addColorStop(.4,'#fbbf24');g.addColorStop(1,'rgba(249,115,22,0)');
+  ctx.fillStyle=g;ctx.beginPath();
+  ctx.moveTo(cx,by);ctx.quadraticCurveTo(cx-9*scale,by-16*scale,cx,by-34*scale*fl);
+  ctx.quadraticCurveTo(cx+9*scale,by-16*scale,cx,by);ctx.fill();
+  ctx.fillStyle='rgba(56,189,248,.7)';ctx.beginPath();
+  ctx.moveTo(cx,by);ctx.quadraticCurveTo(cx-4*scale,by-8*scale,cx,by-16*scale*fl);
+  ctx.quadraticCurveTo(cx+4*scale,by-8*scale,cx,by);ctx.fill();ctx.restore();
+}
+/* ============ 氧气制取 ============ */
+(function(){
+  const cv=document.getElementById('o2Cv'),ctx=cv.getContext('2d');
+  const S={rxn:'kmno4',gen:'heat',col:'water',running:false,fill:0,bub:makeBubbles(26),bub2:makeBubbles(18)};
+  const need={kmno4:'heat',h2o2:'flask',kclo3:'heat'};
+  const solidColor={kmno4:'#7c3aed',kclo3:'#e5e7eb',h2o2:'#1f2937'};
+  function genOK(){return S.gen===need[S.rxn];}
+  function seg(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#o2Rxn button').forEach(b=>b.onclick=()=>{S.rxn=b.dataset.r;S.gen=need[S.rxn];seg('o2Rxn','r',S.rxn);seg('o2Gen','g',S.gen);reset();});
+  document.querySelectorAll('#o2Gen button').forEach(b=>b.onclick=()=>{S.gen=b.dataset.g;seg('o2Gen','g',S.gen);reset();});
+  document.querySelectorAll('#o2Col button').forEach(b=>b.onclick=()=>{S.col=b.dataset.c;seg('o2Col','c',S.col);reset();});
+  function reset(){S.running=false;S.fill=0;upd();}
+  document.getElementById('o2Reset').onclick=reset;
+  document.getElementById('o2Run').onclick=()=>{
+    if(!genOK()){tip('bad','❌ 装置不匹配！'+(need[S.rxn]==='heat'?'该反应是固+固加热型，应选"试管+酒精灯"。':'该反应是固+液常温型，应选"锥形瓶+分液漏斗"，加热反而危险。'));return;}
+    S.running=true;tip('good','✅ 装置正确，开始反应放出 O₂，导管口连续均匀冒气泡后正式收集。');
+  };
+  document.getElementById('o2Check').onclick=()=>{
+    if(S.fill>=0.97)tip('good','🔥 带火星木条放在瓶口 → 立即剧烈复燃！说明集气瓶里已收满纯净的氧气（氧气支持燃烧）。');
+    else if(S.fill>0.35)tip('warn','🔥 带火星木条伸入 → 复燃，证明是氧气；但充满度仅 '+Math.round(S.fill*100)+'%，还没满，继续收集。');
+    else tip('bad','带火星木条几乎不复燃 —— 瓶里氧气太少（大多还是空气），再等等。');
+  };
+  function tip(c,m){const e=document.getElementById('o2Tip');e.className='status '+c;e.textContent=m;}
+  function upd(){
+    document.getElementById('o2Fill').textContent=Math.round(S.fill*100)+'%';
+    document.getElementById('o2Pure').textContent=S.col==='water'?'较纯':'含少量空气';
+  }
+  // ---- 绘制 ----
+  function drawTestTube(t){
+    const cx=150,cy=170;ctx.save();ctx.translate(cx,cy);ctx.rotate(0.14);
+    ctx.strokeStyle='#9fb6c9';ctx.lineWidth=3;ctx.fillStyle='rgba(180,210,230,.08)';
+    roundRect(ctx,-95,-26,210,52,26);ctx.fill();ctx.stroke();
+    // 固体药品
+    ctx.fillStyle=solidColor[S.rxn];ctx.beginPath();ctx.ellipse(-55,12,42,9,0,0,7);ctx.fill();
+    // 棉花
+    ctx.fillStyle='#f5f5f4';ctx.fillRect(58,-12,12,24);
+    // 橡皮塞
+    ctx.fillStyle='#374151';roundRect(ctx,92,-20,20,40,6);ctx.fill();
+    ctx.restore();
+    // 酒精灯
+    const lx=110,ly=250;ctx.fillStyle='#1e3a5f';roundRect(ctx,lx-22,ly-26,44,40,8);ctx.fill();
+    ctx.fillStyle='#334155';ctx.fillRect(lx-7,ly-40,14,16);
+    if(S.running)drawFlame(ctx,lx,ly-40,1.1,perf);
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('酒精灯',lx,ly+30);
+    ctx.fillText('试管略向下倾斜',150,90);
+    return {x:228,y:155}; // 导管起点
+  }
+  function drawFlask(t){
+    const cx=140,by=270;
+    // 锥形瓶
+    ctx.strokeStyle='#9fb6c9';ctx.lineWidth=3;ctx.fillStyle='rgba(180,210,230,.06)';
+    ctx.beginPath();ctx.moveTo(cx-14,by-110);ctx.lineTo(cx-14,by-88);ctx.lineTo(cx-52,by);ctx.lineTo(cx+52,by);ctx.lineTo(cx+14,by-88);ctx.lineTo(cx+14,by-110);ctx.closePath();ctx.fill();ctx.stroke();
+    // 液体+固体
+    ctx.fillStyle='rgba(56,189,248,.30)';ctx.beginPath();ctx.moveTo(cx-40,by-26);ctx.lineTo(cx+40,by-26);ctx.lineTo(cx+50,by-2);ctx.lineTo(cx-50,by-2);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#1f2937';ctx.beginPath();ctx.ellipse(cx,by-6,32,7,0,0,7);ctx.fill();
+    if(S.running)drawBubbles(ctx,S.bub2,cx-40,by-26,80,24,perf,1.6,'rgba(255,255,255,.6)');
+    // 分液漏斗
+    ctx.fillStyle='#374151';ctx.fillRect(cx-9,by-150,18,40);
+    ctx.strokeStyle='#9fb6c9';ctx.lineWidth=2.5;ctx.fillStyle='rgba(190,210,230,.10)';
+    ctx.beginPath();ctx.moveTo(cx-26,by-200);ctx.lineTo(cx+26,by-200);ctx.lineTo(cx+6,by-150);ctx.lineTo(cx-6,by-150);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(56,189,248,.5)';ctx.beginPath();ctx.moveTo(cx-20,by-188);ctx.lineTo(cx+20,by-188);ctx.lineTo(cx+5,by-152);ctx.lineTo(cx-5,by-152);ctx.closePath();ctx.fill();
+    if(S.running){ctx.fillStyle='rgba(56,189,248,.7)';for(let i=0;i<2;i++){const yy=(by-148)+((perf*60+i*30)%70);if(yy<by-30){ctx.beginPath();ctx.arc(cx,yy,2.4,0,7);ctx.fill();}}}
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('分液漏斗(滴双氧水)',cx,by-208);ctx.fillText('锥形瓶(MnO₂)',cx,by+18);
+    return {x:cx+14,y:by-104};
+  }
+  function drawCollect(start){
+    if(S.col==='water'){
+      const tx=560,top=300,bot=410,left=440,right=720;
+      // 水槽
+      ctx.fillStyle='#1e3a5f';roundRect(ctx,left,top,right-left,bot-top,8);ctx.fill();
+      ctx.fillStyle='rgba(56,189,248,.45)';roundRect(ctx,left+4,top+16,right-left-8,bot-top-20,6);ctx.fill();
+      // 倒置集气瓶
+      const jx=tx,jtop=150,jbot=372,jw=82;
+      const inH=jbot-jtop-14;const gasH=S.fill*inH;
+      ctx.save();
+      ctx.beginPath();roundRect(ctx,jx-jw/2,jtop,jw,jbot-jtop,10);ctx.clip();
+      ctx.fillStyle='rgba(56,189,248,.5)';ctx.fillRect(jx-jw/2,jtop,jw,jbot-jtop);
+      ctx.fillStyle='rgba(123,227,192,.45)';ctx.fillRect(jx-jw/2,jtop+7,jw,gasH);
+      if(S.running)drawBubbles(ctx,S.bub,jx-jw/2,jtop+7+gasH,jw,inH-gasH,perf,2.0,'rgba(255,255,255,.7)');
+      ctx.restore();
+      ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,jx-jw/2,jtop,jw,jbot-jtop,10);ctx.stroke();
+      // 导管：从start到水槽，再弯入瓶口
+      ctx.strokeStyle='#94a3b8';ctx.lineWidth=4;ctx.beginPath();
+      ctx.moveTo(start.x,start.y);ctx.lineTo(start.x+40,start.y);ctx.lineTo(start.x+40,392);ctx.lineTo(jx,392);ctx.lineTo(jx,jbot-6);ctx.stroke();
+      ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('排水法 · 瓶口向下',jx,140);
+    }else{
+      const jx=560,jtop=170,jbot=388,jw=86;
+      const inH=jbot-jtop-10;const gasH=S.fill*inH;
+      ctx.save();ctx.beginPath();roundRect(ctx,jx-jw/2,jtop,jw,jbot-jtop,10);ctx.clip();
+      ctx.fillStyle='rgba(123,227,192,.42)';ctx.fillRect(jx-jw/2,jbot-gasH,jw,gasH);
+      if(S.running)drawBubbles(ctx,S.bub,jx-jw/2,jbot-gasH,jw,gasH,perf,1.4,'rgba(255,255,255,.4)');
+      ctx.restore();
+      ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,jx-jw/2,jtop,jw,jbot-jtop,10);ctx.stroke();
+      // 玻璃片
+      ctx.fillStyle='#94a3b8';ctx.fillRect(jx-jw/2-6,jtop-5,jw+12,5);
+      // 导管插到底
+      ctx.strokeStyle='#94a3b8';ctx.lineWidth=4;ctx.beginPath();
+      ctx.moveTo(start.x,start.y);ctx.lineTo(start.x+40,start.y);ctx.lineTo(start.x+40,jtop-20);ctx.lineTo(jx,jtop-20);ctx.lineTo(jx,jbot-14);ctx.stroke();
+      ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('向上排空气 · 瓶口向上',jx,jbot+18);
+      ctx.fillText('导管伸入瓶底',jx,jtop-26);
+    }
+  }
+  let perf=0;
+  function draw(){
+    ctx.clearRect(0,0,760,440);
+    ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,440);
+    const start=S.gen==='heat'?drawTestTube():drawFlask();
+    drawCollect(start);
+    if(!genOK()){ctx.fillStyle='rgba(248,113,113,.9)';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('⚠ 当前发生装置与反应不匹配',380,28);}
+  }
+  animators['o2']=function(t){perf=t;if(S.running&&S.fill<1){S.fill=clamp(S.fill+0.0045,0,1);if(S.fill>=1){S.running=false;tip('good','🎉 集气瓶已收满！现在可以用带火星木条验满。');}upd();}draw();};
+  redraws['o2']=function(){upd();draw();};
+})();
+/* ============ 二氧化碳制取与性质 ============ */
+(function(){
+  const cv=document.getElementById('co2Cv'),ctx=cv.getContext('2d');
+  const S={mode:'make',acid:'hcl',running:false,fill:0,lime:false,stall:false,
+           candleLevel:0,pouring:false,lowOut:false,highOut:false,bub:makeBubbles(24),bub2:makeBubbles(16)};
+  function tip(c,m){const e=document.getElementById('co2Tip');e.className='status '+c;e.textContent=m;}
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#co2Mode button').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;segOn('co2Mode','m',S.mode);
+    document.getElementById('co2MakeBox').style.display=S.mode==='make'?'':'none';
+    document.getElementById('co2CandleBox').style.display=S.mode==='candle'?'':'none';tip('good',S.mode==='make'?'选好酸，点开始制取。':'点"倾倒二氧化碳"，观察上下蜡烛熄灭顺序。');draw();});
+  document.querySelectorAll('#co2Acid button').forEach(b=>b.onclick=()=>{S.acid=b.dataset.a;segOn('co2Acid','a',S.acid);resetMake();});
+  function resetMake(){S.running=false;S.fill=0;S.lime=false;S.stall=false;upd();}
+  document.getElementById('co2Reset').onclick=resetMake;
+  document.getElementById('co2Run').onclick=()=>{
+    resetMake();S.running=true;
+    if(S.acid==='hcl')tip('good','✅ 大理石与稀盐酸反应，平稳放出 CO₂，向上排空气法收集。');
+    else if(S.acid==='h2so4')tip('bad','⚠ 稀硫酸与石灰石生成微溶的 CaSO₄，包在石灰石表面，反应很快就停了！');
+    else tip('warn','浓盐酸也能反应，但它易挥发，收集到的 CO₂ 混有 HCl 气体——不纯！');
+  };
+  document.getElementById('co2Lime').onclick=()=>{
+    if(S.fill<0.05&&!S.running){tip('warn','先点"开始制取"产生 CO₂，再通入石灰水检验。');return;}
+    S.lime=true;tip('good','🧪 澄清石灰水变浑浊 → CO₂ + Ca(OH)₂ = CaCO₃↓ + H₂O，证明气体是二氧化碳。');
+  };
+  document.getElementById('co2Full').onclick=()=>{
+    if(S.fill>=0.97)tip('good','🔥 燃着的木条放瓶口立即熄灭 → 已集满 CO₂（CO₂不支持燃烧）。');
+    else if(S.fill>0.05)tip('warn','燃着木条放瓶口还在燃烧 → 没满，继续收集（'+Math.round(S.fill*100)+'%）。');
+    else tip('bad','瓶里几乎没有 CO₂，先制取。');
+  };
+  document.getElementById('co2Pour').onclick=()=>{if(S.lowOut&&S.highOut){tip('good','两支蜡烛都灭了，点"重新点燃"再试一次。');return;}S.pouring=true;tip('warn','正在倾倒 CO₂……注意看哪支蜡烛先灭。');};
+  document.getElementById('co2PourReset').onclick=()=>{S.candleLevel=0;S.pouring=false;S.lowOut=false;S.highOut=false;tip('good','蜡烛已重新点燃。');};
+  function upd(){document.getElementById('co2Fill').textContent=Math.round(S.fill*100)+'%';
+    document.getElementById('co2Pure').textContent=S.acid==='conc'?'不纯(含HCl)':(S.acid==='h2so4'?'量很少':'纯净');}
+  let perf=0;
+  function drawGen(){
+    const cx=140,by=300;
+    ctx.strokeStyle='#9fb6c9';ctx.lineWidth=3;ctx.fillStyle='rgba(180,210,230,.06)';
+    ctx.beginPath();ctx.moveTo(cx-14,by-110);ctx.lineTo(cx-14,by-88);ctx.lineTo(cx-54,by);ctx.lineTo(cx+54,by);ctx.lineTo(cx+14,by-88);ctx.lineTo(cx+14,by-110);ctx.closePath();ctx.fill();ctx.stroke();
+    // 液体
+    ctx.fillStyle='rgba(56,189,248,.28)';ctx.beginPath();ctx.moveTo(cx-44,by-30);ctx.lineTo(cx+44,by-30);ctx.lineTo(cx+52,by-2);ctx.lineTo(cx-52,by-2);ctx.closePath();ctx.fill();
+    // 大理石块
+    ctx.fillStyle='#cbd5e1';for(const p of [[-18,-8],[6,-6],[-2,-14],[20,-12]]){ctx.beginPath();ctx.moveTo(cx+p[0],by+p[1]);ctx.lineTo(cx+p[0]+12,by+p[1]-3);ctx.lineTo(cx+p[0]+9,by+p[1]+8);ctx.lineTo(cx+p[0]-3,by+p[1]+7);ctx.closePath();ctx.fill();}
+    const bubbling=S.running&&!(S.acid==='h2so4'&&S.stall);
+    if(bubbling)drawBubbles(ctx,S.bub2,cx-40,by-30,80,26,perf,1.8,'rgba(255,255,255,.6)');
+    // 长颈漏斗
+    ctx.fillStyle='#374151';ctx.fillRect(cx-7,by-30,14,18);
+    ctx.strokeStyle='#9fb6c9';ctx.lineWidth=2.5;ctx.fillStyle='rgba(190,210,230,.10)';
+    ctx.beginPath();ctx.moveTo(cx-22,by-200);ctx.lineTo(cx+22,by-200);ctx.lineTo(cx+6,by-150);ctx.lineTo(cx-6,by-150);ctx.lineTo(cx-6,by-12);ctx.lineTo(cx+6,by-12);ctx.lineTo(cx+6,by-150);ctx.stroke();
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('长颈漏斗',cx,by-208);ctx.fillText('锥形瓶 + 大理石',cx,by+18);
+    return {x:cx+14,y:by-104};
+  }
+  function drawMake(){
+    const start=drawGen();
+    // 集气瓶（向上排空气）
+    const jx=440,jtop=150,jbot=360,jw=84,inH=jbot-jtop-10,gasH=S.fill*inH;
+    ctx.save();ctx.beginPath();roundRect(ctx,jx-jw/2,jtop,jw,jbot-jtop,10);ctx.clip();
+    ctx.fillStyle='rgba(160,160,170,.30)';ctx.fillRect(jx-jw/2,jbot-gasH,jw,gasH);ctx.restore();
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,jx-jw/2,jtop,jw,jbot-jtop,10);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.fillRect(jx-jw/2-6,jtop-5,jw+12,5);
+    ctx.strokeStyle='#94a3b8';ctx.lineWidth=4;ctx.beginPath();
+    ctx.moveTo(start.x,start.y);ctx.lineTo(start.x+30,start.y);ctx.lineTo(start.x+30,jtop-22);ctx.lineTo(jx,jtop-22);ctx.lineTo(jx,jbot-14);ctx.stroke();
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('向上排空气法',jx,jbot+18);
+    // 石灰水试管
+    const lx=650,ltop=210,lbot=370,lw=46;
+    ctx.save();ctx.beginPath();roundRect(ctx,lx-lw/2,ltop,lw,lbot-ltop,lw/2);ctx.clip();
+    ctx.fillStyle=S.lime?'rgba(226,232,240,.85)':'rgba(120,200,180,.25)';ctx.fillRect(lx-lw/2,ltop+40,lw,lbot-ltop);
+    if(S.lime)drawBubbles(ctx,S.bub,lx-lw/2,ltop+40,lw,lbot-ltop-40,perf,1.2,'rgba(255,255,255,.6)');
+    ctx.restore();
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;roundRect(ctx,lx-lw/2,ltop,lw,lbot-ltop,lw/2);ctx.stroke();
+    ctx.fillStyle='#9aa0c7';ctx.fillText(S.lime?'石灰水变浑浊':'澄清石灰水',lx,lbot+16);
+    if(S.acid==='conc'){ctx.fillStyle='#fbbf24';ctx.font='12px sans-serif';ctx.fillText('CO₂含HCl,不纯',jx,jtop-32);}
+  }
+  function drawCandle(){
+    const bx=380,bw=300,btop=120,bbot=360;
+    // 烧杯
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;ctx.fillStyle='rgba(180,210,230,.04)';
+    roundRect(ctx,bx-bw/2,btop,bw,bbot-btop,6);ctx.fill();ctx.stroke();
+    // 阶梯
+    ctx.fillStyle='#475569';ctx.fillRect(bx-bw/2+20,bbot-50,110,50);ctx.fillRect(bx+10,bbot-120,110,120);
+    // CO2 气体层
+    const gh=S.candleLevel*(bbot-btop-10);
+    ctx.fillStyle='rgba(160,160,170,.28)';ctx.fillRect(bx-bw/2+3,bbot-gh,bw-6,gh);
+    // 蜡烛
+    function candle(cx,base,h,out){
+      ctx.fillStyle='#fde68a';ctx.fillRect(cx-7,base-h,14,h);
+      ctx.strokeStyle='#92400e';ctx.beginPath();ctx.moveTo(cx,base-h);ctx.lineTo(cx,base-h-6);ctx.stroke();
+      if(!out)drawFlame(ctx,cx,base-h-6,0.8,perf);
+      else{ctx.fillStyle='#9aa0c7';ctx.beginPath();for(let i=0;i<3;i++){ctx.arc(cx+(i-1)*3,base-h-12-i*5,2.5,0,7);}ctx.fill();}
+    }
+    candle(bx-65,bbot-50,46,S.lowOut);
+    candle(bx+65,bbot-120,46,S.highOut);
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('低蜡烛',bx-65,bbot+16);ctx.fillText('高蜡烛',bx+65,bbot+16);
+    // 倾倒的瓶
+    if(S.pouring){ctx.save();ctx.translate(bx-bw/2-30,btop-6);ctx.rotate(0.9);
+      ctx.fillStyle='rgba(160,160,170,.3)';ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;roundRect(ctx,-22,-60,44,60,8);ctx.fill();ctx.stroke();ctx.restore();
+      ctx.strokeStyle='rgba(160,160,170,.5)';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(bx-bw/2-6,btop+6);ctx.lineTo(bx-bw/2+24,btop+40);ctx.stroke();}
+  }
+  function draw(){
+    ctx.clearRect(0,0,760,430);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,430);
+    if(S.mode==='make')drawMake();else drawCandle();
+  }
+  animators['co2']=function(t){perf=t;
+    if(S.mode==='make'&&S.running){
+      if(S.acid==='h2so4'){if(S.fill<0.16)S.fill+=0.004;else S.stall=true;}
+      else if(S.fill<1)S.fill=clamp(S.fill+0.005,0,1);
+      if(S.fill>=1){S.running=false;tip('good','🎉 已集满 CO₂，可以验满了。');}
+      upd();
+    }
+    if(S.mode==='candle'&&S.pouring){
+      S.candleLevel=clamp(S.candleLevel+0.006,0,1);
+      const lowH=(360-120-50-46-6)/(360-120-10);   // 低蜡烛火焰高度占比(从底)
+      const highH=(360-120-120-46-6)/(360-120-10);
+      if(S.candleLevel>0.30&&!S.lowOut){S.lowOut=true;tip('warn','⬇ 下面的低蜡烛先熄灭了！（CO₂沉在底部）');}
+      if(S.candleLevel>0.62&&!S.highOut){S.highOut=true;S.pouring=false;tip('good','⬆ 上面的高蜡烛随后也灭了。说明 CO₂ 密度比空气大、且不支持燃烧。');}
+    }
+    draw();
+  };
+  redraws['co2']=function(){upd();draw();};
+})();
+/* ============ 燃烧的条件 ============ */
+(function(){
+  const cv=document.getElementById('burnCv'),ctx=cv.getContext('2d');
+  const S={temp:20,o2:false,bub:makeBubbles(14)};
+  const sl=document.getElementById('burnT');
+  function setT(v){S.temp=v;sl.value=v;document.getElementById('burnTv').textContent=v;upd();}
+  sl.oninput=()=>setT(+sl.value);
+  document.getElementById('burnHot').onclick=()=>{setT(80);tip();};
+  document.getElementById('burnReset').onclick=()=>{S.o2=false;setT(20);tip();};
+  document.getElementById('burnO2').onclick=()=>{S.o2=!S.o2;tip();};
+  function states(){return {wp:S.temp>=40, rp:S.temp>=240, uw:S.temp>=40&&S.o2};}
+  function tip(){const st=states();const e=document.getElementById('burnTip');
+    if(S.temp<40){e.className='status warn';e.textContent='温度还没到白磷着火点(40℃)，先倒入热水。';}
+    else if(!S.o2){e.className='status good';e.textContent='铜片上白磷燃烧✅(接触O₂+温度够)；红磷不燃(没到240℃着火点)；水中白磷不燃(隔绝O₂)。再点"通氧气"看水下燃烧。';}
+    else{e.className='status good';e.textContent='💥 向水中白磷通O₂后，水中白磷也燃烧了！三处现象共同证明燃烧需"可燃物+接触O₂+达到着火点"。';}
+    upd();}
+  function upd(){const st=states();
+    document.getElementById('burnWP').textContent=st.wp?'燃烧🔥':'未燃';
+    document.getElementById('burnRP').textContent=st.rp?'燃烧🔥':'未燃';
+    document.getElementById('burnUW').textContent=st.uw?'燃烧🔥':'未燃';
+    document.getElementById('burnTemp').textContent=S.temp+'℃';}
+  let perf=0;
+  function smoke(cx,cy){ctx.fillStyle='rgba(230,230,235,.5)';for(let i=0;i<4;i++){const yy=cy-((perf*40+i*16)%64);ctx.beginPath();ctx.arc(cx+Math.sin((perf+i)*2)*5,yy,4+i,0,7);ctx.fill();}}
+  function draw(){
+    const st=states();
+    ctx.clearRect(0,0,760,400);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,400);
+    const bx=380,bw=420,btop=150,bbot=350;
+    // 烧杯+热水
+    const wc=S.temp>=70?'rgba(248,113,113,.18)':S.temp>=45?'rgba(251,191,36,.16)':'rgba(56,189,248,.18)';
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,bx-bw/2,btop,bw,bbot-btop,8);ctx.stroke();
+    ctx.fillStyle=wc;ctx.fillRect(bx-bw/2+3,btop+30,bw-6,bbot-btop-33);
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('热水 '+S.temp+'℃',bx,bbot-10);
+    // 铜片(架在烧杯口)
+    ctx.fillStyle='#b87333';ctx.fillRect(bx-150,btop-6,300,8);
+    ctx.fillStyle='#9aa0c7';ctx.fillText('铜片(导热)',bx,btop-14);
+    // 铜片白磷(左)
+    const wx=bx-90,wy=btop-8;ctx.fillStyle='#fde68a';ctx.beginPath();ctx.arc(wx,wy-6,8,0,7);ctx.fill();
+    ctx.fillStyle='#cde3f0';ctx.fillText('白磷',wx,btop-30);
+    if(st.wp){drawFlame(ctx,wx,wy-10,1.0,perf);smoke(wx,wy-30);}
+    // 铜片红磷(右)
+    const rx=bx+90,ry=btop-8;ctx.fillStyle='#b91c1c';ctx.beginPath();ctx.arc(rx,ry-6,8,0,7);ctx.fill();
+    ctx.fillStyle='#cde3f0';ctx.fillText('红磷',rx,btop-30);
+    if(st.rp){drawFlame(ctx,rx,ry-10,1.0,perf);}
+    // 水中白磷
+    const ux=bx,uy=bbot-50;ctx.fillStyle='#fde68a';ctx.beginPath();ctx.arc(ux,uy,9,0,7);ctx.fill();
+    ctx.fillStyle='#cde3f0';ctx.fillText('水中白磷',ux,uy+24);
+    if(st.uw){drawFlame(ctx,ux,uy-8,0.9,perf);}
+    // 通氧气导管
+    if(S.o2){ctx.strokeStyle='#38bdf8';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(bx+150,btop+10);ctx.lineTo(bx+150,uy);ctx.lineTo(ux+12,uy);ctx.stroke();
+      drawBubbles(ctx,S.bub,ux-6,uy-30,24,30,perf,1.6,'rgba(160,220,255,.8)');
+      ctx.fillStyle='#38bdf8';ctx.fillText('通O₂',bx+150,btop+4);}
+  }
+  animators['burn']=function(t){perf=t;draw();};
+  redraws['burn']=function(){upd();draw();};
+  upd();
+})();
+/* ============ 质量守恒定律 ============ */
+(function(){
+  const cv=document.getElementById('massCv'),ctx=cv.getContext('2d');
+  const INIT=120.0, GAS=2.4;
+  // dir: +1 吸气增重, -1 放气减重, 0 无气体
+  const R={na2co3:{dir:-1,label:'Na₂CO₃+2HCl=2NaCl+H₂O+CO₂↑',vis:'bubble'},
+           mg:{dir:+1,label:'2Mg+O₂=2MgO',vis:'flame'},
+           p:{dir:+1,label:'4P+5O₂=2P₂O₅',vis:'flame'},
+           fe:{dir:0,label:'Fe+CuSO₄=FeSO₄+Cu',vis:'none'}};
+  const S={rxn:'na2co3',sealed:true,run:false,prog:0,bub:makeBubbles(20)};
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#massRxn button').forEach(b=>b.onclick=()=>{S.rxn=b.dataset.r;segOn('massRxn','r',S.rxn);reset();});
+  document.querySelectorAll('#massSeal button').forEach(b=>b.onclick=()=>{S.sealed=b.dataset.s==='1';segOn('massSeal','s',b.dataset.s);reset();});
+  function reset(){S.run=false;S.prog=0;upd();tipReset();}
+  document.getElementById('massReset').onclick=reset;
+  document.getElementById('massRun').onclick=()=>{S.run=true;S.prog=0;};
+  function finalReading(){const d=R[S.rxn].dir;if(S.sealed||d===0)return INIT;return INIT+d*GAS;}
+  function curReading(){return INIT+(finalReading()-INIT)*S.prog;}
+  function upd(){document.getElementById('massBefore').textContent=INIT.toFixed(1);
+    document.getElementById('massAfter').textContent=curReading().toFixed(1);}
+  function tipReset(){const e=document.getElementById('massTip');e.className='status good';e.textContent='点"开始反应"，观察天平示数。'+(R[S.rxn].dir!==0&&!S.sealed?'(此反应有气体，敞口会看到变化)':'');}
+  function tipDone(){const e=document.getElementById('massTip');const d=R[S.rxn].dir;
+    if(d===0){e.className='status good';e.textContent='无气体参加/生成，敞口或密闭天平示数都不变 → 直接验证守恒。';}
+    else if(S.sealed){e.className='status good';e.textContent='密闭装置：气体没跑掉(气球收着)，示数不变 → 验证质量守恒 ✅。';}
+    else if(d<0){e.className='status warn';e.textContent='敞口：生成的 CO₂ 逸出，示数变小了。但把跑掉的气体算上，质量其实守恒。';}
+    else{e.className='status warn';e.textContent='敞口：从空气中吸收了 O₂，固体变重。把吸收的气体算上，质量仍守恒。';}}
+  let perf=0;
+  function draw(){
+    ctx.clearRect(0,0,760,400);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,400);
+    const r=R[S.rxn];
+    // 电子天平
+    const bx=380,by=330;ctx.fillStyle='#1f2937';roundRect(ctx,bx-150,by,300,40,8);ctx.fill();
+    ctx.fillStyle='#0a1713';roundRect(ctx,bx+40,by+8,95,24,5);ctx.fill();
+    ctx.fillStyle='#7be3c0';ctx.font='bold 20px ui-monospace,monospace';ctx.textAlign='right';ctx.fillText(curReading().toFixed(1)+' g',bx+128,by+26);
+    ctx.fillStyle='#94a3b8';ctx.fillStyle='#475569';roundRect(ctx,bx-110,by-8,220,10,4);ctx.fill(); // 托盘
+    // 锥形瓶
+    const fx=bx,fb=by-8;
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;ctx.fillStyle='rgba(180,210,230,.05)';
+    ctx.beginPath();ctx.moveTo(fx-12,fb-150);ctx.lineTo(fx-12,fb-120);ctx.lineTo(fx-50,fb);ctx.lineTo(fx+50,fb);ctx.lineTo(fx+12,fb-120);ctx.lineTo(fx+12,fb-150);ctx.closePath();ctx.fill();ctx.stroke();
+    // 内容物
+    if(S.rxn==='fe'||S.rxn==='na2co3'){ctx.fillStyle='rgba(56,189,248,.30)';if(S.rxn==='fe'&&S.prog>0.3)ctx.fillStyle='rgba(125,211,160,.30)';
+      ctx.beginPath();ctx.moveTo(fx-42,fb-34);ctx.lineTo(fx+42,fb-34);ctx.lineTo(fx+48,fb-2);ctx.lineTo(fx-48,fb-2);ctx.closePath();ctx.fill();}
+    if(S.rxn==='na2co3'){ctx.fillStyle='#e5e7eb';ctx.beginPath();ctx.ellipse(fx,fb-6,30,6,0,0,7);ctx.fill();
+      if(S.run&&S.prog<1)drawBubbles(ctx,S.bub,fx-40,fb-34,80,32,perf,2.2,'rgba(255,255,255,.7)');}
+    if(S.rxn==='fe'){ctx.fillStyle='#6b7280';ctx.fillRect(fx-3,fb-40,6,30);if(S.prog>0.3){ctx.fillStyle='#f59e0b';ctx.fillRect(fx-3,fb-40,6,30*S.prog);}}
+    if((S.rxn==='mg'||S.rxn==='p')){ctx.fillStyle=S.rxn==='mg'?'#d1d5db':'#fde68a';ctx.beginPath();ctx.arc(fx,fb-12,7,0,7);ctx.fill();
+      if(S.run&&S.prog<0.9)drawFlame(ctx,fx,fb-14,1.0,perf);
+      if(S.prog>=0.9){ctx.fillStyle='#e5e7eb';ctx.beginPath();ctx.ellipse(fx,fb-8,26,6,0,0,7);ctx.fill();}}
+    // 气球(密闭)
+    if(S.sealed){const infl=r.dir<0?(0.4+0.7*S.prog):(0.7-0.4*S.prog);const rr=14+18*clamp(infl,0,1);
+      ctx.fillStyle='#374151';ctx.fillRect(fx-7,fb-160,14,12);
+      ctx.fillStyle='rgba(248,113,113,.55)';ctx.beginPath();ctx.ellipse(fx,fb-160-rr,rr*0.85,rr,0,0,7);ctx.fill();
+      ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('气球封闭',fx,fb-170-rr*2);
+    }else{ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';
+      if(r.dir<0&&S.run){ctx.fillStyle='rgba(200,200,210,.5)';for(let i=0;i<3;i++){const yy=fb-150-((perf*50+i*22)%70);ctx.beginPath();ctx.arc(fx+Math.sin((perf+i))*8,yy,3+i,0,7);ctx.fill();}ctx.fillStyle='#9aa0c7';ctx.fillText('CO₂逸出',fx,fb-180);}
+      if(r.dir>0&&S.run){ctx.fillStyle='#38bdf8';ctx.fillText('↓吸收空气中O₂',fx+70,fb-120);}
+    }
+    ctx.fillStyle='#cde3f0';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText(r.label,bx,40);
+  }
+  animators['mass']=function(t){perf=t;if(S.run&&S.prog<1){S.prog=clamp(S.prog+0.012,0,1);upd();if(S.prog>=1){S.run=false;tipDone();}}draw();};
+  redraws['mass']=function(){upd();draw();};
+  upd();
+})();
+/* ============ 电解水 ============ */
+(function(){
+  const cv=document.getElementById('watCv'),ctx=cv.getContext('2d');
+  const MAX=20;
+  const S={on:true,rate:2,vH:0,vO:0,bubH:makeBubbles(18),bubO:makeBubbles(12)};
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#watSw button').forEach(b=>b.onclick=()=>{S.on=b.dataset.s==='on';segOn('watSw','s',b.dataset.s);upd();});
+  const rs=document.getElementById('watR');rs.oninput=()=>{S.rate=+rs.value;document.getElementById('watRv').textContent=['','慢','中','快'][S.rate];};
+  document.getElementById('watReset').onclick=()=>{S.vH=0;S.vO=0;tip('good','已重置。接通电源开始电解。');upd();};
+  document.getElementById('watTestH').onclick=()=>{if(S.vH<2){tip('warn','负极气体太少，先多收集一会儿。');return;}tip('good','🔥 负极气体靠近火焰 → 发出淡蓝色火焰("噗"声)，是可燃的氢气 H₂。');};
+  document.getElementById('watTestO').onclick=()=>{if(S.vO<1){tip('warn','正极气体太少，先多收集一会儿。');return;}tip('good','🔥 带火星木条伸入正极气体 → 复燃，是支持燃烧的氧气 O₂。');};
+  function tip(c,m){const e=document.getElementById('watTip');e.className='status '+c;e.textContent=m;}
+  function upd(){
+    document.getElementById('watVH').textContent=S.vH.toFixed(1);
+    document.getElementById('watVO').textContent=S.vO.toFixed(1);
+    document.getElementById('watRatio').textContent=S.vO>0.2?(S.vH/S.vO).toFixed(1)+' : 1':'—';
+    document.getElementById('watState').textContent=S.on?(S.vH>=MAX?'已收满':'电解中'):'未通电';
+  }
+  let perf=0;
+  function tube(x,gas,vol,color,label,pole,bub){
+    const top=70,bot=350,w=46,inH=bot-top-8;
+    const gh=(vol/MAX)*inH;
+    ctx.save();ctx.beginPath();roundRect(ctx,x-w/2,top,w,bot-top,w/2);ctx.clip();
+    ctx.fillStyle='rgba(56,189,248,.32)';ctx.fillRect(x-w/2,top,w,bot-top);
+    ctx.fillStyle=color;ctx.fillRect(x-w/2,top+4,w,gh);
+    if(S.on&&vol<MAX)drawBubbles(ctx,bub,x-w/2,top+4+gh,w,inH-gh,perf,1.8,'rgba(255,255,255,.65)');
+    ctx.restore();
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;roundRect(ctx,x-w/2,top,w,bot-top,w/2);ctx.stroke();
+    // 刻度
+    ctx.strokeStyle='rgba(205,227,240,.5)';ctx.fillStyle='#9aa0c7';ctx.font='9px sans-serif';ctx.textAlign='right';ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){const yy=top+4+inH*(i/4);ctx.beginPath();ctx.moveTo(x-w/2,yy);ctx.lineTo(x-w/2+8,yy);ctx.stroke();ctx.fillText((MAX-i*MAX/4),x-w/2-2,yy+3);}
+    ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText(label,x,top-22);
+    ctx.fillStyle=pole==='+'?'#f87171':'#5b8cff';ctx.font='bold 14px sans-serif';ctx.fillText(pole+'极',x,top-6);
+    // 电极
+    ctx.strokeStyle=pole==='+'?'#f87171':'#5b8cff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,bot+0);ctx.lineTo(x,370);ctx.stroke();
+  }
+  function draw(){
+    ctx.clearRect(0,0,760,420);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,420);
+    // 连通底座
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(300,350);ctx.lineTo(300,375);ctx.lineTo(460,375);ctx.lineTo(460,350);ctx.stroke();
+    tube(300,'H',S.vH,'rgba(123,227,192,.5)','H₂(多)','-',S.bubH);
+    tube(460,'O',S.vO,'rgba(251,191,36,.45)','O₂(少)','+',S.bubO);
+    // 电源
+    ctx.fillStyle='#1f2937';roundRect(ctx,610,370,120,30,6);ctx.fill();
+    ctx.fillStyle=S.on?'#7be3c0':'#6b7280';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText(S.on?'直流电源 ON':'电源 OFF',670,390);
+    ctx.strokeStyle=S.on?'#f87171':'#475569';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(610,385);ctx.lineTo(460,385);ctx.lineTo(460,372);ctx.stroke();
+    ctx.strokeStyle=S.on?'#5b8cff':'#475569';ctx.beginPath();ctx.moveTo(730,385);ctx.lineTo(745,385);ctx.lineTo(745,372);ctx.lineTo(300,372);ctx.stroke();
+    ctx.fillStyle='#cde3f0';ctx.font='12px sans-serif';ctx.fillText('2H₂O —通电→ 2H₂↑ + O₂↑   （氢二氧一，体积比2:1）',380,36);
+  }
+  animators['water']=function(t){perf=t;if(S.on&&S.vH<MAX){const k=0.012*S.rate;S.vO=clamp(S.vO+k,0,MAX/2);S.vH=clamp(S.vH+2*k,0,MAX);upd();}draw();};
+  redraws['water']=function(){upd();draw();};
+  upd();
+})();
+/* ============ 酸碱中和 pH ============ */
+(function(){
+  const cv=document.getElementById('phCv'),ctx=cv.getContext('2d');
+  const gcv=document.getElementById('phGraph'),gx=gcv.getContext('2d');
+  const tbody=document.getElementById('phTbody');
+  const nOH0=2; // mmol
+  const S={ind:'ph',V:0,rows:[]};
+  function pHat(V){const nH=V*0.1,vol=20+V,diff=nOH0-nH;
+    if(Math.abs(diff)<1e-6)return 7;
+    if(diff>0)return clamp(14+Math.log10(diff/vol),0,14);
+    return clamp(-Math.log10((-diff)/vol),0,14);}
+  function acidity(p){return p<6.9?'酸性':(p>7.1?'碱性':'中性');}
+  function colorName(p){if(S.ind==='ph')return p>=8.2?'红色':'无色';
+    if(S.ind==='lit')return p<5?'红色':(p>8?'蓝色':'紫色');return '—';}
+  function solColor(p){if(S.ind==='ph')return p>=8.2?`rgba(244,63,94,${clamp((p-8.2)/3,.25,.6)})`:'rgba(226,232,240,.18)';
+    if(S.ind==='lit'){if(p<5)return 'rgba(244,63,94,.45)';if(p>8)return 'rgba(91,140,255,.45)';return 'rgba(167,139,250,.45)';}
+    return 'rgba(56,189,248,.20)';}
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#phInd button').forEach(b=>b.onclick=()=>{S.ind=b.dataset.i;segOn('phInd','i',S.ind);upd();});
+  const sl=document.getElementById('phV');sl.oninput=()=>{S.V=+sl.value;document.getElementById('phVv').textContent=S.V;upd();};
+  document.getElementById('phEq').onclick=()=>{S.V=20;sl.value=20;document.getElementById('phVv').textContent=20;upd();
+    tip('good','🎯 滴入20mL盐酸，酸碱恰好完全中和：pH=7，酚酞红色刚好褪为无色，生成NaCl和水。');};
+  document.getElementById('phRec').onclick=()=>{const p=pHat(S.V);S.rows.push([S.V.toFixed(1),p.toFixed(2),acidity(p),colorName(p)]);render();};
+  document.getElementById('phClr').onclick=()=>{S.rows=[];render();};
+  function tip(c,m){const e=document.getElementById('phTip');e.className='status '+c;e.textContent=m;}
+  function render(){renderTable(tbody,S.rows,5,'拖动滑块到不同体积，点"记录这点"。');}
+  function upd(){const p=pHat(S.V);
+    document.getElementById('phPH').textContent=p.toFixed(2);
+    const a=document.getElementById('phAcid');a.textContent=acidity(p);
+    a.style.color=p<6.9?'#f87171':(p>7.1?'#7be3c0':'#fbbf24');
+    if(S.V<19.5)tip('good','当前碱性，pH='+p.toFixed(2)+'。继续滴盐酸，pH 会下降。'+(S.ind==='ph'?'酚酞显红色。':''));
+    else if(S.V<=20.5)tip('warn','接近恰好中和！pH 在此处剧烈突变（'+p.toFixed(2)+'），酚酞红色刚好褪去。');
+    else tip('bad','盐酸过量，溶液变酸性 pH='+p.toFixed(2)+'，酚酞保持无色。');
+    drawSim();drawGraph();}
+  let perf=0;
+  function drawSim(){
+    ctx.clearRect(0,0,760,430);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,430);
+    const p=pHat(S.V);
+    // 滴定管
+    const bx=300;ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;ctx.fillStyle='rgba(180,210,230,.06)';
+    roundRect(ctx,bx-13,30,26,180,6);ctx.fill();ctx.stroke();
+    ctx.fillStyle='rgba(56,189,248,.30)';ctx.fillRect(bx-11,40,22,150);
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.textAlign='center';ctx.fillText('酸式滴定管',bx,24);ctx.fillText('稀盐酸HCl',bx+62,60);
+    ctx.fillStyle='#94a3b8';ctx.beginPath();ctx.moveTo(bx-5,210);ctx.lineTo(bx+5,210);ctx.lineTo(bx,228);ctx.closePath();ctx.fill();
+    // 落下的液滴
+    const dy=228+((perf*120)%150);if(dy<360){ctx.fillStyle='rgba(123,200,255,.9)';ctx.beginPath();ctx.arc(bx,dy,3.2,0,7);ctx.fill();}
+    // 锥形瓶
+    const fb=378,fx=bx;
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;ctx.fillStyle='rgba(180,210,230,.04)';
+    ctx.beginPath();ctx.moveTo(fx-16,fb-110);ctx.lineTo(fx-16,fb-86);ctx.lineTo(fx-66,fb);ctx.lineTo(fx+66,fb);ctx.lineTo(fx+16,fb-86);ctx.lineTo(fx+16,fb-110);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle=solColor(p);ctx.beginPath();ctx.moveTo(fx-50,fb-40);ctx.lineTo(fx+50,fb-40);ctx.lineTo(fx+62,fb-3);ctx.lineTo(fx-62,fb-3);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.fillText('锥形瓶 · NaOH+指示剂',fx,fb+18);
+    // pH 大色块
+    const px=560,py=120;ctx.fillStyle='#0a1713';roundRect(ctx,px-90,py-40,200,150,12);ctx.fill();
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('pH 试纸比色',px+10,py-20);
+    const phColor=p<3?'#ef4444':p<6?'#f59e0b':p<7?'#a3e635':p<8?'#34d399':p<11?'#22d3ee':'#6366f1';
+    ctx.fillStyle=phColor;roundRect(ctx,px-70,py,160,46,8);ctx.fill();
+    ctx.fillStyle='#04140f';ctx.font='bold 22px sans-serif';ctx.fillText('pH '+p.toFixed(1),px+10,py+32);
+    ctx.fillStyle='#cde3f0';ctx.font='12px sans-serif';ctx.fillText(acidity(p)+' · '+colorName(p),px+10,py+72);
+    ctx.fillStyle='#9aa0c7';ctx.font='11px sans-serif';ctx.fillText('0 红 — 7 绿 — 14 紫',px+10,py+96);
+  }
+  function drawGraph(){
+    gx.clearRect(0,0,760,320);gx.fillStyle='#0a1713';gx.fillRect(0,0,760,320);
+    const L=52,R=730,T=20,B=280;
+    // 轴
+    gx.strokeStyle='#234039';gx.lineWidth=1;gx.fillStyle='#9aa0c7';gx.font='10px sans-serif';
+    for(let ph=0;ph<=14;ph+=2){const y=B-(B-T)*(ph/14);gx.beginPath();gx.moveTo(L,y);gx.lineTo(R,y);gx.stroke();gx.textAlign='right';gx.fillText(ph,L-6,y+3);}
+    for(let v=0;v<=40;v+=5){const x=L+(R-L)*(v/40);gx.beginPath();gx.moveTo(x,T);gx.lineTo(x,B);gx.strokeStyle='#172a25';gx.stroke();gx.strokeStyle='#234039';gx.textAlign='center';gx.fillText(v,x,B+14);}
+    gx.fillStyle='#cde3f0';gx.fillText('pH',L-6,T-4);gx.fillText('加入盐酸 V/mL',R-40,B+14);
+    // pH=7线
+    const y7=B-(B-T)*(7/14);gx.strokeStyle='rgba(123,227,192,.5)';gx.setLineDash([5,4]);gx.beginPath();gx.moveTo(L,y7);gx.lineTo(R,y7);gx.stroke();gx.setLineDash([]);
+    // 曲线
+    gx.strokeStyle='#fb7185';gx.lineWidth=2.5;gx.beginPath();
+    for(let v=0;v<=40;v+=0.25){const p=pHat(v);const x=L+(R-L)*(v/40),y=B-(B-T)*(p/14);if(v===0)gx.moveTo(x,y);else gx.lineTo(x,y);}gx.stroke();
+    // 当前点
+    const cp=pHat(S.V),cx2=L+(R-L)*(S.V/40),cy2=B-(B-T)*(cp/14);
+    gx.fillStyle='#7be3c0';gx.beginPath();gx.arc(cx2,cy2,5,0,7);gx.fill();
+    // 记录点
+    gx.fillStyle='#fbbf24';S.rows.forEach(r=>{const v=+r[0],p=+r[1];const x=L+(R-L)*(v/40),y=B-(B-T)*(p/14);gx.beginPath();gx.arc(x,y,3.5,0,7);gx.fill();});
+    // 突变区标注
+    gx.fillStyle='#9aa0c7';gx.font='11px sans-serif';gx.textAlign='center';gx.fillText('恰好中和 20mL',L+(R-L)*(20/40),T+12);
+  }
+  animators['ph']=function(t){perf=t;drawSim();};
+  redraws['ph']=function(){upd();render();};
+  upd();render();
+})();
+/* ============ 金属活动性 ============ */
+(function(){
+  const cv=document.getElementById('metCv'),ctx=cv.getContext('2d');
+  const rank={Mg:5,Zn:4,Fe:3,Cu:1};
+  const metalColor={Mg:'#d4d4d8',Zn:'#a8b0bd',Fe:'#71717a',Cu:'#b87333'};
+  const sol={hcl:{tgt:2,base:[230,230,200,.18],name:'稀盐酸'},
+             cuso4:{tgt:1,base:[40,110,220,.55],name:'硫酸铜溶液'},
+             agno3:{tgt:0.5,base:[210,225,240,.12],name:'硝酸银溶液'}};
+  const S={metal:'Zn',sol:'hcl',in:false,prog:0,bub:makeBubbles(22)};
+  function reacts(){return rank[S.metal]>sol[S.sol].tgt;}
+  function gas(){return S.sol==='hcl'&&reacts();}
+  function rate(){if(!gas())return 0;return {Mg:2.6,Zn:1.6,Fe:0.9}[S.metal]||0;}
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#metM button').forEach(b=>b.onclick=()=>{S.metal=b.dataset.m;segOn('metM','m',S.metal);reset();});
+  document.querySelectorAll('#metS button').forEach(b=>b.onclick=()=>{S.sol=b.dataset.s;segOn('metS','s',S.sol);reset();});
+  function reset(){S.in=false;S.prog=0;upd();}
+  document.getElementById('metReset').onclick=reset;
+  document.getElementById('metRun').onclick=()=>{S.in=true;S.prog=0;describe();};
+  function describe(){const e=document.getElementById('metTip');const r=reacts();
+    if(!r){e.className='status bad';
+      if(S.sol==='hcl')e.textContent=S.metal+' 排在 H 后面，不能与稀盐酸反应，无明显现象。';
+      else e.textContent=S.metal+' 的活动性不比溶液中的金属强，不能发生置换，无明显现象。';
+      upd();return;}
+    e.className='status good';
+    if(S.sol==='hcl')e.textContent=S.metal+'逐渐溶解，产生'+(rate()>2?'大量':rate()>1?'较多':'少量')+'气泡(H₂)。'+eq();
+    else if(S.sol==='cuso4')e.textContent=S.metal+'表面覆盖一层红色的铜，蓝色溶液逐渐变浅'+(S.metal==='Fe'?'(变浅绿色)':'')+'。'+eq();
+    else e.textContent=S.metal+'表面附着银白色的银'+(S.metal==='Cu'?'，溶液由无色变蓝色':'')+'。'+eq();
+    upd();}
+  function eq(){const m=S.metal;
+    if(S.sol==='hcl')return {Mg:'Mg+2HCl=MgCl₂+H₂↑',Zn:'Zn+2HCl=ZnCl₂+H₂↑',Fe:'Fe+2HCl=FeCl₂+H₂↑'}[m]||'';
+    if(S.sol==='cuso4')return {Mg:'Mg+CuSO₄=MgSO₄+Cu',Zn:'Zn+CuSO₄=ZnSO₄+Cu',Fe:'Fe+CuSO₄=FeSO₄+Cu'}[m]||'';
+    return {Mg:'Mg+2AgNO₃=Mg(NO₃)₂+2Ag',Zn:'Zn+2AgNO₃=Zn(NO₃)₂+2Ag',Fe:'Fe+2AgNO₃=Fe(NO₃)₂+2Ag',Cu:'Cu+2AgNO₃=Cu(NO₃)₂+2Ag'}[m]||'';}
+  function upd(){document.getElementById('metReact').textContent=S.in?(reacts()?'反应✅':'不反应'):'—';
+    document.getElementById('metRate').textContent=S.in?(gas()?(rate()>2?'剧烈':rate()>1?'较快':'较慢'):(reacts()?'缓慢置换':'无')):'—';}
+  let perf=0;
+  function curColor(){const b=sol[S.sol].base.slice();
+    if(S.in&&S.sol==='cuso4'&&reacts()){const f=1-S.prog*0.8;return `rgba(${b[0]},${b[1]},${b[2]},${b[3]*f})`;}
+    if(S.in&&S.sol==='agno3'&&S.metal==='Cu'){return `rgba(40,110,220,${0.1+0.4*S.prog})`;}
+    return `rgba(${b[0]},${b[1]},${b[2]},${b[3]})`;}
+  function draw(){
+    ctx.clearRect(0,0,760,380);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,380);
+    const tx=380,top=50,bot=340,w=70;
+    // 试管
+    ctx.save();ctx.beginPath();roundRect(ctx,tx-w/2,top,w,bot-top,w/2);ctx.clip();
+    ctx.fillStyle=curColor();ctx.fillRect(tx-w/2,top+60,w,bot-top);
+    // 金属条
+    if(S.in){
+      const mh=120-(S.sol==='hcl'&&reacts()?40*S.prog:0);
+      ctx.fillStyle=metalColor[S.metal];ctx.fillRect(tx-10,bot-40-mh,20,mh);
+      // 析出物镀层
+      if(reacts()&&S.sol!=='hcl'){ctx.fillStyle=S.sol==='cuso4'?'#c2410c':'#e5e7eb';
+        ctx.globalAlpha=clamp(S.prog,0,1);ctx.fillRect(tx-13,bot-40-mh,26,mh);ctx.globalAlpha=1;
+        // 疏松颗粒
+        ctx.fillStyle=S.sol==='cuso4'?'#ea580c':'#f1f5f9';for(let i=0;i<12*S.prog;i++){ctx.beginPath();ctx.arc(tx-12+Math.random()*24,bot-40-mh+Math.random()*mh,1.8,0,7);ctx.fill();}}
+      if(gas())drawBubbles(ctx,S.bub,tx-w/2,top+60,w,bot-top-60,perf,rate(),'rgba(255,255,255,.7)');
+    }
+    ctx.restore();
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,tx-w/2,top,w,bot-top,w/2);ctx.stroke();
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText(sol[S.sol].name,tx,bot+22);ctx.fillText(S.metal,tx,top-10);
+    if(S.in){ctx.fillStyle=reacts()?'#7be3c0':'#f87171';ctx.font='bold 13px sans-serif';ctx.textAlign='left';
+      ctx.fillText(reacts()?'✅ '+eq():'✗ 不反应',150,bot-6);}
+    // 排序提示
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('活动性：Mg > Zn > Fe > (H) > Cu',tx,28);
+  }
+  animators['metal']=function(t){perf=t;if(S.in&&S.prog<1)S.prog=clamp(S.prog+0.012,0,1);draw();};
+  redraws['metal']=function(){upd();draw();};
+  upd();
+})();
+/* ============ 配制溶液 ============ */
+(function(){
+  const cv=document.getElementById('solCv'),ctx=cv.getContext('2d');
+  const S={m:50,w:6,eye:'ok',run:false,prog:0};
+  function needNaCl(){return S.m*S.w/100;}
+  function needWater(){return S.m-needNaCl();} // g ≈ mL
+  function actualWater(){const v=needWater();return S.eye==='up'?v*1.10:S.eye==='down'?v*0.90:v;}
+  function actualW(){const s=needNaCl();return s/(s+actualWater())*100;}
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  const sm=document.getElementById('solM'),sw=document.getElementById('solW');
+  sm.oninput=()=>{S.m=+sm.value;document.getElementById('solMv').textContent=S.m;reset();};
+  sw.oninput=()=>{S.w=+sw.value;document.getElementById('solWv').textContent=S.w;reset();};
+  document.querySelectorAll('#solEye button').forEach(b=>b.onclick=()=>{S.eye=b.dataset.e;segOn('solEye','e',S.eye);reset();});
+  function reset(){S.run=false;S.prog=0;upd();}
+  document.getElementById('solReset').onclick=reset;
+  document.getElementById('solRun').onclick=()=>{S.run=true;S.prog=0;};
+  function upd(){
+    document.getElementById('solNaCl').textContent=needNaCl().toFixed(1);
+    document.getElementById('solWater').textContent=Math.round(needWater());
+    document.getElementById('solActual').textContent=actualW().toFixed(1);
+    const d=actualW()-S.w;const e=document.getElementById('solErr');
+    e.textContent=Math.abs(d)<0.05?'准确':(d>0?'偏大':'偏小');
+    e.style.color=Math.abs(d)<0.05?'#7be3c0':(d>0?'#f87171':'#fbbf24');
+    const t=document.getElementById('solTip');
+    if(S.eye==='ok'){t.className='status good';t.textContent='平视读数，量取准确 → 配出的浓度正好等于目标 '+S.w+'%。';}
+    else if(S.eye==='up'){t.className='status warn';t.textContent='仰视 → 实际量入的水偏多 → 浓度偏小（'+actualW().toFixed(1)+'% < '+S.w+'%）。';}
+    else{t.className='status warn';t.textContent='俯视 → 实际量入的水偏少 → 浓度偏大（'+actualW().toFixed(1)+'% > '+S.w+'%）。';}
+  }
+  function draw(){
+    ctx.clearRect(0,0,760,380);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,380);
+    ctx.fillStyle='#cde3f0';ctx.font='12px sans-serif';ctx.textAlign='center';
+    // 1 托盘天平(称NaCl)
+    const bx=140,by=250;
+    ctx.fillStyle='#1f2937';roundRect(ctx,bx-70,by,140,28,6);ctx.fill();
+    ctx.fillStyle='#475569';roundRect(ctx,bx-55,by-10,50,8,3);ctx.fill();roundRect(ctx,bx+10,by-10,50,8,3);ctx.fill();
+    // NaCl 堆
+    const naShown=S.run?clamp(S.prog*2,0,1):1;
+    ctx.fillStyle='#f1f5f9';ctx.beginPath();ctx.moveTo(bx-45,by-10);ctx.lineTo(bx-30,by-10-10*naShown);ctx.lineTo(bx-15,by-10);ctx.fill();
+    // 砝码
+    ctx.fillStyle='#6b7280';roundRect(ctx,bx+22,by-22,22,12,2);ctx.fill();
+    ctx.fillStyle='#9aa0c7';ctx.fillText('①称量 NaCl '+needNaCl().toFixed(1)+'g',bx,by+46);
+    // 2 量筒(量水)
+    const lx=370,ltop=70,lbot=300,lw=44;
+    const fillFrac=clamp(actualWater()/100,0.05,1);
+    ctx.save();ctx.beginPath();roundRect(ctx,lx-lw/2,ltop,lw,lbot-ltop,6);ctx.clip();
+    ctx.fillStyle='rgba(56,189,248,.4)';ctx.fillRect(lx-lw/2,lbot-(lbot-ltop)*fillFrac,lw,(lbot-ltop)*fillFrac);ctx.restore();
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;roundRect(ctx,lx-lw/2,ltop,lw,lbot-ltop,6);ctx.stroke();
+    // 刻度线(目标液面)
+    const tgtY=lbot-(lbot-ltop)*clamp(needWater()/100,0.05,1);
+    ctx.strokeStyle='#fbbf24';ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(lx-lw/2-10,tgtY);ctx.lineTo(lx+lw/2,tgtY);ctx.stroke();ctx.setLineDash([]);
+    // 视线
+    const liqY=lbot-(lbot-ltop)*fillFrac;
+    const eyeY=S.eye==='up'?liqY+38:S.eye==='down'?liqY-38:liqY;
+    ctx.strokeStyle=S.eye==='ok'?'#7be3c0':'#f87171';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(lx-70,eyeY);ctx.lineTo(lx,liqY);ctx.stroke();
+    ctx.fillStyle=S.eye==='ok'?'#7be3c0':'#f87171';ctx.font='16px sans-serif';ctx.fillText('👁',lx-78,eyeY+5);
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.fillText('②量取水 '+Math.round(needWater())+'mL',lx,lbot+22);
+    ctx.fillStyle='#fbbf24';ctx.font='10px sans-serif';ctx.fillText('黄线=刻度',lx+44,tgtY-3);
+    // 3 烧杯溶解
+    const ex=600,eb=300,ew=120,etop=180;
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,ex-ew/2,etop,ew,eb-etop,6);ctx.stroke();
+    if(S.run){const f=clamp(S.prog,0,1);ctx.fillStyle='rgba(123,227,192,'+(0.15+0.25*f)+')';ctx.fillRect(ex-ew/2+3,eb-(eb-etop-6)*f,ew-6,(eb-etop-6)*f);
+      // 玻璃棒
+      ctx.strokeStyle='#cde3f0';ctx.lineWidth=2;ctx.save();ctx.translate(ex,etop+10);ctx.rotate(0.2*Math.sin(perf*6));ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(8,90);ctx.stroke();ctx.restore();}
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.fillText('③溶解+玻璃棒搅拌',ex,eb+22);
+    // 结果
+    ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('目标 '+S.w+'%  →  实际 '+actualW().toFixed(1)+'%',ex,40);
+  }
+  let perf=0;
+  animators['solution']=function(t){perf=t;if(S.run&&S.prog<1)S.prog=clamp(S.prog+0.01,0,1);draw();};
+  redraws['solution']=function(){upd();draw();};
+  upd();
+})();
+/* ============ 粗盐提纯 ============ */
+(function(){
+  const cv=document.getElementById('saltCv'),ctx=cv.getContext('2d');
+  const names=['溶解','过滤','蒸发','完成'];
+  const S={step:0,op:'ok',prog:0,animating:false};
+  function segOn(id,key,val){document.querySelectorAll('#'+id+' button').forEach(b=>b.classList.toggle('on',b.dataset[key]===val));}
+  document.querySelectorAll('#saltOp button').forEach(b=>b.onclick=()=>{S.op=b.dataset.o;segOn('saltOp','o',S.op);if(S.step>=1)tipFor();draw();});
+  document.getElementById('saltReset').onclick=()=>{S.step=0;S.prog=0;S.animating=true;tipFor();upd();};
+  document.getElementById('saltNext').onclick=()=>{if(S.step<3){S.step++;S.prog=0;S.animating=true;}tipFor();upd();};
+  function clean(){return S.op==='ok';}
+  function tipFor(){const e=document.getElementById('saltTip');
+    if(S.step===0){e.className='status good';e.textContent='① 溶解：粗盐倒入水中，用玻璃棒搅拌加速溶解，泥沙等不溶物沉底。点"下一步"过滤。';}
+    else if(S.step===1){if(clean()){e.className='status good';e.textContent='② 过滤：玻璃棒引流，遵守"一贴二低三靠"。泥沙留在滤纸上，滤液变澄清。';}
+      else{e.className='status bad';e.textContent='② 过滤：'+(S.op==='break'?'滤纸破损':'液面高于滤纸边缘')+' → 浊液漏过，滤液仍浑浊，需重新过滤！';}}
+    else if(S.step===2){e.className='status good';e.textContent='③ 蒸发：蒸发皿加热并搅拌，出现较多固体时停止加热用余热蒸干（防飞溅）。';}
+    else{e.className='status good';e.textContent='✅ 得到白色精盐！产率=精盐质量/粗盐质量。若过滤不规范会损失或带杂质，产率/纯度下降。';}}
+  function upd(){document.getElementById('saltStep').textContent=names[S.step];
+    document.getElementById('saltYield').textContent=S.step>=3?(clean()?'≈72%':'偏低'):'—';}
+  function ironStand(x){ctx.fillStyle='#475569';ctx.fillRect(x,60,8,300);ctx.fillRect(x,352,80,8);}
+  let perf=0;
+  function draw(){
+    ctx.clearRect(0,0,760,400);ctx.fillStyle='#0c1a16';ctx.fillRect(0,0,760,400);
+    ctx.fillStyle='#cde3f0';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.fillText('步骤：'+names[S.step],380,28);
+    if(S.step===0)drawDissolve();
+    else if(S.step===1)drawFilter();
+    else if(S.step===2)drawEvaporate();
+    else drawDone();
+    // 步骤进度点
+    for(let i=0;i<3;i++){ctx.fillStyle=i<=S.step?'#22c39a':'#234039';ctx.beginPath();ctx.arc(330+i*40,380,6,0,7);ctx.fill();
+      ctx.fillStyle=i<=S.step?'#04140f':'#9aa0c7';ctx.font='9px sans-serif';ctx.fillText(['溶','滤','蒸'][i],330+i*40,383);}
+  }
+  function drawDissolve(){
+    const ex=380,eb=320,ew=160,etop=160;
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,ex-ew/2,etop,ew,eb-etop,6);ctx.stroke();
+    ctx.fillStyle='rgba(160,140,90,'+(0.4-0.25*S.prog)+')';ctx.fillRect(ex-ew/2+3,etop+20,ew-6,eb-etop-23);
+    // 沉底泥沙
+    ctx.fillStyle='#7c6a3f';ctx.fillRect(ex-ew/2+3,eb-12,ew-6,9);
+    // 玻璃棒搅拌
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;ctx.save();ctx.translate(ex,etop+8);ctx.rotate(0.25*Math.sin(perf*5));ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(6,120);ctx.stroke();ctx.restore();
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.fillText('粗盐+水，玻璃棒搅拌',ex,eb+24);
+  }
+  function drawFilter(){
+    const fx=360;ironStand(160);
+    // 漏斗
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(fx-46,150);ctx.lineTo(fx+46,150);ctx.lineTo(fx+8,210);ctx.lineTo(fx+8,250);ctx.lineTo(fx-8,250);ctx.lineTo(fx-8,210);ctx.lineTo(fx-46,150);ctx.stroke();
+    // 滤纸
+    ctx.fillStyle=clean()?'rgba(245,245,240,.7)':'rgba(245,245,240,.5)';ctx.beginPath();ctx.moveTo(fx-40,154);ctx.lineTo(fx+40,154);ctx.lineTo(fx,206);ctx.closePath();ctx.fill();
+    if(S.op==='break'){ctx.strokeStyle='#f87171';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(fx-6,170);ctx.lineTo(fx+4,196);ctx.stroke();}
+    // 泥沙残留
+    ctx.fillStyle='#7c6a3f';ctx.beginPath();ctx.moveTo(fx-20,180);ctx.lineTo(fx+20,180);ctx.lineTo(fx,200);ctx.closePath();ctx.fill();
+    // 上方倒液烧杯+玻璃棒引流
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(fx-70,120);ctx.lineTo(fx-20,150);ctx.stroke();// 玻璃棒
+    ctx.fillStyle='rgba(56,189,248,.4)';for(let i=0;i<3;i++){const yy=156+((perf*60+i*20)%50);ctx.beginPath();ctx.arc(fx,yy,2,0,7);ctx.fill();}
+    // 滴液
+    ctx.fillStyle=clean()?'rgba(150,200,230,.8)':'rgba(150,150,110,.8)';
+    const dy=250+((perf*120)%80);if(dy<300){ctx.beginPath();ctx.arc(fx,dy,2.6,0,7);ctx.fill();}
+    // 承接烧杯+滤液
+    const ex=fx,eb=360,ew=120,etop=300;
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;roundRect(ctx,ex-ew/2,etop,ew,eb-etop,6);ctx.stroke();
+    ctx.fillStyle=clean()?'rgba(150,200,230,.35)':'rgba(150,150,110,.4)';ctx.fillRect(ex-ew/2+3,etop+18,ew-6,eb-etop-21);
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.fillText(clean()?'澄清滤液':'浑浊滤液(需重滤)',ex,eb+22);
+    // 标注 一贴二低三靠
+    ctx.fillStyle='#7be3c0';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('一贴：滤纸贴内壁',470,150);ctx.fillText('二低：纸<斗口、液<纸边',470,172);ctx.fillText('三靠：杯靠棒、棒靠纸、斗靠壁',470,194);
+    ctx.fillText('玻璃棒——引流',470,216);
+  }
+  function drawEvaporate(){
+    const dx=380,dy=180;
+    // 蒸发皿
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(dx,dy,70,0.1,Math.PI-0.1,false);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(dx-70,dy+8);ctx.lineTo(dx-86,dy);ctx.moveTo(dx+70,dy+8);ctx.lineTo(dx+86,dy);ctx.stroke();
+    // 液体减少+晶体增多
+    const f=S.prog;
+    ctx.fillStyle='rgba(150,200,230,'+(0.4*(1-f))+')';ctx.beginPath();ctx.arc(dx,dy,66,0.15,Math.PI-0.15,false);ctx.fill();
+    ctx.fillStyle='#f1f5f9';for(let i=0;i<40*f;i++){const a=0.2+Math.random()*(Math.PI-0.4),r=Math.random()*60;ctx.fillRect(dx+Math.cos(a)*r-1.5,dy+Math.sin(a)*r-1.5,3,3);}
+    // 玻璃棒
+    ctx.strokeStyle='#cde3f0';ctx.lineWidth=2.5;ctx.save();ctx.translate(dx,dy-50);ctx.rotate(0.3*Math.sin(perf*6));ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(5,70);ctx.stroke();ctx.restore();
+    // 蒸气
+    ctx.fillStyle='rgba(220,230,235,.35)';for(let i=0;i<4;i++){const yy=dy-30-((perf*40+i*16)%70);ctx.beginPath();ctx.arc(dx-20+i*12+Math.sin(perf+i)*5,yy,3+i,0,7);ctx.fill();}
+    // 酒精灯+陶土网
+    ctx.fillStyle='#475569';ctx.fillRect(dx-80,dy+20,160,5);
+    ctx.fillStyle='#1e3a5f';roundRect(ctx,dx-22,dy+40,44,40,8);ctx.fill();ctx.fillStyle='#334155';ctx.fillRect(dx-7,dy+26,14,16);
+    drawFlame(ctx,dx,dy+26,1.1,perf);
+    ctx.fillStyle='#9aa0c7';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('蒸发皿+石棉网+酒精灯，搅拌防飞溅',dx,dy+150);
+  }
+  function drawDone(){
+    const dx=380,dy=210;
+    ctx.fillStyle='#f8fafc';ctx.beginPath();ctx.moveTo(dx-60,dy+40);ctx.lineTo(dx+60,dy+40);ctx.lineTo(dx+40,dy-10);ctx.lineTo(dx-40,dy-10);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#e2e8f0';for(let i=0;i<60;i++){ctx.fillRect(dx-55+Math.random()*110,dy-8+Math.random()*46,2.5,2.5);}
+    ctx.fillStyle='#fff';ctx.font='bold 16px sans-serif';ctx.textAlign='center';ctx.fillText('精盐 NaCl',dx,dy+70);
+    ctx.fillStyle=clean()?'#7be3c0':'#f87171';ctx.font='13px sans-serif';
+    ctx.fillText(clean()?'规范操作 · 产率≈72% · 纯净':'操作有误 · 产率/纯度偏低',dx,dy+94);
+  }
+  animators['salt']=function(t){perf=t;if(S.animating&&S.prog<1){S.prog=clamp(S.prog+0.012,0,1);if(S.prog>=1)S.animating=false;upd();}draw();};
+  redraws['salt']=function(){upd();tipFor();draw();};
+  upd();tipFor();
+})();
+</script>
+</body>
+</html>
