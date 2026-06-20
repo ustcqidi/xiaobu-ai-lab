@@ -14,6 +14,11 @@
 
 > 化学、数学可视化实验开发中。
 
+## 数理化实验参考
+
+- [PhET 互动模拟（物理）](https://phet.colorado.edu/en/simulations/filter?subjects=physics&type=html) — 科罗拉多大学出品的免费互动实验，覆盖力学、光学、电学等；可作为虚拟实验台的交互设计与实验选题参考。
+- 也可在 PhET 站内切换 Chemistry / Math 分类，作为后续化学、数学可视化实验的灵感来源。
+
 ## 本地预览
 
 中国象棋使用原生 ES6 模块，`file://` 直接双击会被浏览器拦截，需要通过本地服务器访问：
