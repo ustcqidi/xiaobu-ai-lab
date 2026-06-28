@@ -132,6 +132,18 @@
   .cover.ph { display: flex; align-items: center; justify-content: center; }
   .cover.ph.chem { background: radial-gradient(120% 120% at 30% 20%, #1b3a4a, #0c1126); }
   .cover.ph.math { background: radial-gradient(120% 120% at 70% 20%, #3a1b4a, #0c1126); }
+  .cover.ph.minecraft {
+    background:
+      linear-gradient(180deg, #8fd0ff 0 42%, #6fc065 42% 56%, #8b5a36 56% 100%);
+  }
+  .cover.ph.minecraft::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.08) 0 8%, transparent 8% 16%, rgba(0,0,0,0.06) 16% 24%, transparent 24% 32%, rgba(255,255,255,0.07) 32% 40%, transparent 40% 48%, rgba(0,0,0,0.05) 48% 56%, transparent 56% 64%, rgba(255,255,255,0.08) 64% 72%, transparent 72% 80%, rgba(0,0,0,0.06) 80% 88%, transparent 88% 100%);
+    mix-blend-mode: overlay;
+  }
   .cover.ph .glyph { font-size: 64px; font-weight: 800; letter-spacing: 0.05em; color: rgba(255,255,255,0.14); }
 
   .badge-num {
@@ -289,6 +301,24 @@
           </div>
           <div class="actions">
             <a class="btn primary" href="chess/index.html">开始下棋 <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="cover ph minecraft">
+          <span class="badge-num">S05</span>
+          <span class="status live">在线可玩</span>
+          <div class="glyph">MC</div>
+        </div>
+        <div class="body">
+          <h3>我的世界网页版</h3>
+          <p class="desc">从零搭一个 Three.js 方块世界：先做区块渲染和地形生成，再接上第一人称移动、重力、碰撞、动态区块加载，以及挖方块 / 放方块交互，逐步逼近真正可玩的《我的世界》体验。</p>
+          <div class="tags">
+            <span class="tag">Three.js</span><span class="tag">Voxel</span><span class="tag">第一人称</span><span class="tag">无限世界</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="../family/xiaobu-cs/s05-我的世界网页版/index.html">进入世界 <span class="arrow">→</span></a>
           </div>
         </div>
       </article>
