@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的世界网页版 · 无限世界与交互</title>
+  <meta
+    name="description"
+    content="小布 CS 项目：Three.js 版《我的世界》无限世界与交互系统，包含动态区块、准星瞄准、挖方块和放方块。"
+  />
+  <link rel="stylesheet" href="./minecraft-foundation.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="hud">
+      <div class="panel brand">
+        <p class="eyebrow">Phase 3</p>
+        <h1>无限世界与交互</h1>
+        <p class="lede">现在不只是能走，还能让世界随着你移动而展开，并开始和方块真正互动。</p>
+      </div>
+
+      <div class="panel">
+        <h2>本阶段实现</h2>
+        <ul class="feature-list">
+          <li>玩家周围 3×3 区块动态加载</li>
+          <li>移动跨区块时自动生成新地图</li>
+          <li>准星射线检测方块</li>
+          <li>左键挖方块</li>
+          <li>右键放方块</li>
+          <li>边界方块修改后自动重建相邻区块</li>
+          <li>保留第一人称、跳跃、重力和碰撞</li>
+        </ul>
+      </div>
+
+      <div class="panel stats">
+        <h2>实时信息</h2>
+        <div class="stat-row"><span>Chunk</span><strong id="chunk-size">16 × 16 × 18</strong></div>
+        <div class="stat-row"><span>可见面</span><strong id="visible-faces">-</strong></div>
+        <div class="stat-row"><span>三角形</span><strong id="triangles">-</strong></div>
+        <div class="stat-row"><span>最高地面</span><strong id="max-height">-</strong></div>
+      </div>
+
+      <div class="panel controls">
+        <h2>操作</h2>
+        <ul>
+          <li>点击画面进入第一人称</li>
+          <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动</li>
+          <li>鼠标移动视角</li>
+          <li><kbd>Space</kbd> 跳跃</li>
+          <li><kbd>Esc</kbd> 退出鼠标锁定</li>
+          <li>鼠标左键挖方块</li>
+          <li>鼠标右键放方块</li>
+          <li><kbd>R</kbd> 重置并重新生成世界</li>
+        </ul>
+        <button id="regen-btn" class="regen-btn" type="button">重新生成地图</button>
+      </div>
+
+      <div class="panel note">
+        <h2>下一步</h2>
+        <p>接下来可以继续接：快捷栏、背包、方块类型切换、更多地形元素。</p>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="canvas-wrap">
+        <canvas id="scene"></canvas>
+        <div class="overlay">
+          <span class="badge">Infinite World Demo</span>
+          <span class="badge ghost">挖方块 / 放方块 / 动态加载</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="./vendor/three.min.js"></script>
+  <script src="./minecraft-foundation.js"></script>
+</body>
+</html>
