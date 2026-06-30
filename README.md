@@ -10,9 +10,10 @@
 |------|------|------|
 | 身体保卫战（免疫系统塔防） | HTML5 / Canvas | `body-defense/index.html` |
 | 中国象棋（搜索 AI + 残局题库） | HTML5 / ES6 模块 / Canvas | `chess/index.html` |
+| GoC OJ 刷题系统 | 在线判题 / 编程训练 / 算法闯关 | `https://ustcqidi.github.io/goc_oj/oj/` |
 | 初中物理虚拟实验台 | HTML5 / Canvas（单文件） | `physics-lab.html` |
 
-> 化学、数学可视化实验开发中。
+> 化学、数学可视化实验开发中；GoC OJ 作为“编程训练线”补进实验室首页。
 
 ## 数理化实验参考
 

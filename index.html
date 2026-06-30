@@ -108,6 +108,17 @@
   .section-head .txt p { color: var(--muted); margin: 0; max-width: 560px; }
   .kicker { font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-2); font-weight: 700; }
   .line-fill { flex: 1; height: 1px; background: linear-gradient(90deg, var(--line-strong), transparent); margin-bottom: 14px; min-width: 40px; }
+  .track-note {
+    margin: -4px 0 22px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(110,168,254,0.08), rgba(183,148,255,0.08));
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .track-note strong { color: var(--text); }
+  .track-note em { color: var(--accent); font-style: normal; }
 
   /* ---------- Cards ---------- */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
@@ -132,6 +143,41 @@
   .cover.ph { display: flex; align-items: center; justify-content: center; }
   .cover.ph.chem { background: radial-gradient(120% 120% at 30% 20%, #1b3a4a, #0c1126); }
   .cover.ph.math { background: radial-gradient(120% 120% at 70% 20%, #3a1b4a, #0c1126); }
+  .cover.ph.oj {
+    background:
+      radial-gradient(100% 120% at 18% 18%, rgba(86, 231, 255, 0.28), transparent 45%),
+      radial-gradient(100% 120% at 82% 22%, rgba(183, 148, 255, 0.24), transparent 40%),
+      linear-gradient(145deg, #09111f, #12193a 55%, #1a1140);
+  }
+  .cover.ph.oj::before {
+    content: "</>";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.12);
+    text-shadow: 0 0 28px rgba(110,168,254,0.2);
+  }
+  .cover.ph.oj::after {
+    content: "Algorithm Arena";
+    position: absolute;
+    left: 18px;
+    bottom: 16px;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(238,242,255,0.72);
+    background: rgba(7,10,22,0.34);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 6px 10px;
+  }
   .cover.ph.minecraft {
     background:
       linear-gradient(180deg, #8fd0ff 0 42%, #6fc065 42% 56%, #8b5a36 56% 100%);
@@ -262,9 +308,14 @@
       <div class="txt">
         <div class="kicker">CS · 游戏工坊</div>
         <h2>用 AI 造游戏</h2>
-        <p>项目驱动，技能跟着游戏走。每个游戏从「能跑」到「不崩」再到「好玩」，体验真实的迭代过程。</p>
+        <p>项目驱动，技能跟着作品走。这里既有可玩的游戏，也有把编程训练做成产品的实战系统。</p>
       </div>
       <div class="line-fill"></div>
+    </div>
+
+    <div class="track-note">
+      <strong>两条成长线并行：</strong> 一条是 <em>做游戏、做世界、做交互</em>，一条是 <em>刷题、判题、练算法</em>。
+      小布可以一边创作作品，一边打磨真正的编程基本功。
     </div>
 
     <div class="grid">
@@ -319,6 +370,23 @@
           </div>
           <div class="actions">
             <a class="btn primary" href="minecraft/index.html">进入世界 <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="cover ph oj">
+          <span class="badge-num">S06</span>
+          <span class="status live">在线可玩</span>
+        </div>
+        <div class="body">
+          <h3>GoC OJ 刷题系统</h3>
+          <p class="desc">把算法练习做成真正能提交、能判题、能闯关的在线系统。它不只是刷题页，而是“小布 AI 实验室”里的编程训练站，专门负责把解题速度、代码准确度和算法手感练出来。</p>
+          <div class="tags">
+            <span class="tag">算法</span><span class="tag">Online Judge</span><span class="tag">编程训练</span><span class="tag">外部站点</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="https://ustcqidi.github.io/goc_oj/oj/" target="_blank" rel="noreferrer">进入 OJ <span class="arrow">→</span></a>
           </div>
         </div>
       </article>
